@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1027424505923",
+    "project_id": "pin-logy",
+    "storage_bucket": "pin-logy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1027424505923:android:45951642fc4fc5b2f004f6",
+        "android_client_info": {
+          "package_name": "com.example.pin_logy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1027424505923-16r7akhvsq0m2tha1crggtbes36jn2k3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbZvTjdGX5_eQOcE7tGtS5oLxuknAnDJc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1027424505923-16r7akhvsq0m2tha1crggtbes36jn2k3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

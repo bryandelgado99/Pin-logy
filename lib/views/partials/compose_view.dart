@@ -8,7 +8,6 @@ import 'package:pin_logy/components/theme_switcher.dart';
 import 'package:pin_logy/design/theme.dart';
 import 'package:pin_logy/views/admin/login_admin.dart';
 import 'package:pin_logy/views/user/login_view.dart';
-import 'package:pin_logy/views/user/register_view.dart';
 
 class ComposeView extends StatefulWidget {
   const ComposeView({super.key});
@@ -37,13 +36,13 @@ class _ComposeViewState extends State<ComposeView> {
             ),
           ),
           Positioned.fill(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-            child: Container(
-              color: Colors.black.withOpacity(0.2),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+              child: Container(
+                color: Colors.black.withOpacity(0.2),
+              ),
             ),
           ),
-        ),
           DeviceConstraints.isDesktop(context)
               ? Center(
                   child: Column(
@@ -121,12 +120,12 @@ class _ComposeViewState extends State<ComposeView> {
             'assets/icon.png',
             scale: 2.85,
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 30),
           Text(
             "Pin-logy",
             style: theme.textTheme.displayMedium,
           ),
-          SizedBox(height: 15),
+          SizedBox(height: 8),
           Text(
             "Ubícate en tu mundo",
             style: theme.textTheme.headlineSmall,
@@ -140,99 +139,72 @@ class _ComposeViewState extends State<ComposeView> {
     final theme = Theme.of(context);
 
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Text(
-            "Inicia sesión para disfrutar todos los beneficios de la aplicación.",
-            style: theme.textTheme.labelLarge,
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 15),
-          SizedBox(
-            width: 275, // Ajusta el ancho según sea necesario
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const LoginUserView()));
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.login_rounded),
-                    SizedBox(width: 10),
-                    Text("Inicia sesión"),
-                  ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Text(
+              "Inicia sesión para disfrutar todos los beneficios de la aplicación.",
+              style: theme.textTheme.labelLarge,
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 15),
+            SizedBox(
+              width: 275, // Ajusta el ancho según sea necesario
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginUserView()));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.login_rounded),
+                      SizedBox(width: 10),
+                      Text("Iniciar sesión - Usuario"),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 15),
-          Text(
-            "Si no tienes cuenta, registrate gratis.",
-            style: theme.textTheme.labelLarge,
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 8),
-          SizedBox(
-            width: 275, // Ajusta el ancho según sea necesario
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const RegisterUserView()));
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.app_registration_outlined),
-                    SizedBox(width: 10),
-                    Text("Regístrate"),
-                  ],
+            SizedBox(height: 35),
+            Text(
+              "¿Eres administrador?",
+              style: theme.textTheme.labelLarge,
+            ),
+            SizedBox(height: 8),
+            SizedBox(
+              width: 275, // Ajusta el ancho según sea necesario
+              child: FilledButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginAdmin()));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Icon(Icons.admin_panel_settings_rounded),
+                      SizedBox(width: 10),
+                      Text("Perfil - Administrador"),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 25),
-          Text(
-            "¿Eres administrador?",
-            style: theme.textTheme.labelLarge,
-          ),
-          SizedBox(height: 8),
-          SizedBox(
-            width: 275, // Ajusta el ancho según sea necesario
-            child: FilledButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const LoginAdmin()));
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Icon(Icons.admin_panel_settings_rounded),
-                    SizedBox(width: 10),
-                    Text("Perfil - Administrador"),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

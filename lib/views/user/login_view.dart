@@ -1,8 +1,6 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers, library_private_types_in_public_api
-
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:icons_plus/icons_plus.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
 import 'package:pin_logy/design/theme.dart';
 import 'package:toastification/toastification.dart';
@@ -30,6 +28,20 @@ class _LoginUserViewState extends State<LoginUserView> {
 
     return Scaffold(
       appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.supervised_user_circle_rounded,
+              size:25,
+            ),
+            const SizedBox(width: 12),
+            Text(
+              "Perfil de Usuario",
+              style: theme.textTheme.bodyLarge,
+            ),
+          ],
+        ),
         actions: [
           CustomThemeSwitcher(lightTheme: lightTheme, darkTheme: darkTheme)
         ],
@@ -53,9 +65,7 @@ class _LoginUserViewState extends State<LoginUserView> {
           LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
-                physics: bottomInsets > 0
-                    ? const BouncingScrollPhysics()
-                    : const NeverScrollableScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 padding: EdgeInsets.only(bottom: bottomInsets),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
@@ -74,24 +84,20 @@ class _LoginUserViewState extends State<LoginUserView> {
                         children: [
                           Text(
                             "Iniciar sesión",
-                            style: theme.textTheme.headlineMedium,
+                            style: theme.textTheme.displaySmall,
                           ),
                           const SizedBox(
                             height: 25,
                           ),
                           Text(
-                            "Ingresa con tu correo electrónico y contraseña registrados, o, haz uso de tus redes sociales favoritas.",
+                            "Ingresa con tu correo electrónico y contraseña registrados en el sistema.",
                             style: theme.textTheme.bodyMedium,
                             textAlign: TextAlign.justify,
                           ),
                           const SizedBox(
-                            height: 25,
+                            height: 55,
                           ),
                           formSignIn(context),
-                          const SizedBox(
-                            height: 50,
-                          ),
-                          socialButtons()
                         ],
                       ),
                     ),
@@ -171,7 +177,7 @@ class _LoginUserViewState extends State<LoginUserView> {
           const SizedBox(
             height: 18,
           ),
-          ElevatedButton(
+          FilledButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   toastification.show(
@@ -207,37 +213,6 @@ class _LoginUserViewState extends State<LoginUserView> {
               child: const Text("Ingresar"))
         ],
       ),
-    );
-  }
-
-  Widget socialButtons() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        FilledButton(
-          onPressed: () {},
-          child: const Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Icon(EvaIcons.google),
-              Text("Iniciar sesión con Google")
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
-        FilledButton(
-          onPressed: () {},
-          child: const Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Icon(Bootstrap.microsoft),
-              Text("Iniciar sesión con Microsoft")
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
