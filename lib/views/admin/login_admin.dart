@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
@@ -133,7 +134,9 @@ class _LoginAdminState extends State<LoginAdmin> {
       }
     } catch (e) {
       // Manejar errores y mostrar un toast de error
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       toastification.show(
         context: context,
         type: ToastificationType.error,
