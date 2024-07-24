@@ -293,7 +293,6 @@ class _RegisterAdminState extends State<RegisterAdmin> {
           FilledButton(
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
-          
               // Llamanado al método de registro:
                 await onregisterAdmin(context);
               }
