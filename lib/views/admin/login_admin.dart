@@ -10,6 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
 import 'package:pin_logy/design/theme.dart';
+import 'package:pin_logy/models/Admin.dart';
+import 'package:pin_logy/services/auth/admin_register.dart';
+import 'package:pin_logy/views/admin/admin_mainpage.dart';
 import 'package:pin_logy/views/admin/register_admin.dart';
 import 'package:toastification/toastification.dart';
 
@@ -26,6 +29,7 @@ class _LoginAdminState extends State<LoginAdmin> {
   final TextEditingController _passController = TextEditingController();
   final database = FirebaseFirestore.instance;
   bool _obscureText = true;
+  Admin? currentAdmin;
 
   Future<void> onloginAdmin() async {
     try {
@@ -67,6 +71,12 @@ class _LoginAdminState extends State<LoginAdmin> {
 
       // Comparar la contraseña ingresada (encriptada) con la almacenada
       if (digest.toString() == storedPassword) {
+        // Guardar el ID del documento del administrador
+        var adminId = userDoc.id;
+        if (kDebugMode) {
+          print(adminId);
+        }
+
         // Mostrar indicador de progreso y opacar la pantalla
         showDialog(
           barrierDismissible: false,
@@ -88,30 +98,17 @@ class _LoginAdminState extends State<LoginAdmin> {
           },
         );
 
-      // Esperar 500 milisegundos
-      await Future.delayed(const Duration(milliseconds: 500));
+        // Esperar 500 milisegundos
+        await Future.delayed(const Duration(milliseconds: 500));
 
-      // Cerrar el indicador de progreso
-      Navigator.of(context).pop();
+        // Cerrar el indicador de progreso
+        Navigator.of(context).pop();
 
-      // Mostrar alert dialog de éxito
-      await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Sesión iniciada"),
-            content: const Text("Has iniciado sesión correctamente."),
-            actions: <Widget>[
-              TextButton(
-                child: const Text("OK"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+        // Navegar a la página principal del administrador
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+              builder: (context) => AdminMainpage(adminId: adminId)),
+        );
       } else {
         // Contraseña incorrecta, mostrar toast de error
         toastification.show(
@@ -347,7 +344,9 @@ class _LoginAdminState extends State<LoginAdmin> {
           height: 25,
         ),
         FilledButton(
-          onPressed: () async {},
+          onPressed: () async {
+            await signInWithGoogle(context);
+          },
           child: const Padding(
             padding: EdgeInsets.symmetric(vertical: 15),
             child: Row(

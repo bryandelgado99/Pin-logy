@@ -6,21 +6,20 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:pin_logy/design/theme.dart';
 import 'package:pin_logy/views/partials/splash.dart';
-import 'firebase_options.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  FirebaseFirestore.instance.settings = const Settings(
-    persistenceEnabled: true,
-  );
-  if (kIsWeb) {
-    await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
-  }
-
-  runApp(const MyApp());
+    WidgetsFlutterBinding.ensureInitialized();
+    try {
+      await Firebase.initializeApp();
+      FirebaseFirestore.instance.settings = const Settings(
+        persistenceEnabled: true,
+      );
+      if (kIsWeb) {
+        await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+      }
+    } catch (e) {
+      print('Firebase initialization error: $e');
+    }
 }
 
 class MyApp extends StatelessWidget {

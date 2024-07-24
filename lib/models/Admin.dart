@@ -1,10 +1,19 @@
-// ignore_for_file: non_constant_identifier_names, file_names
+// ignore_for_file: file_names
 
-class Admin{
-  final String name;
-  final String last_name;
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class Admin {
   final String email;
-  final String password;
+  final String name;
+  final String lastname;
+  
+  Admin({required this.email, required this.name, required this.lastname});
 
-  Admin({required this.name, required this.last_name, required this.email, required this.password});
+  factory Admin.fromFirestore(DocumentSnapshot doc) {
+    return Admin(
+      email: doc['email'],
+      name: doc['nombre'],
+      lastname: doc['apellido']
+    );
+  }
 }
