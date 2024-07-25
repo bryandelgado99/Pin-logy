@@ -1,17 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
-
-import 'dart:convert';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:crypto/crypto.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
+import '../../services/auth/admin/admin_auth_provider.dart';
 
 class RegisterAdmin extends StatefulWidget {
   const RegisterAdmin({super.key});
 
   @override
-  State<RegisterAdmin> createState() => _RegisterAdminState();
+  _RegisterAdminState createState() => _RegisterAdminState();
 }
 
 class _RegisterAdminState extends State<RegisterAdmin> {
@@ -21,121 +17,13 @@ class _RegisterAdminState extends State<RegisterAdmin> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _repeatpassController = TextEditingController();
+  final AdminAuthProvider _adminAuthProvider = AdminAuthProvider();
 
   bool _obscureTextPass = true;
   bool _obscureTextRepeatPass = true;
 
-  final database = FirebaseFirestore.instance;
-
-  Future<void> onregisterAdmin(BuildContext context) async {
-    try {
-      // Verificar si el usuario ya existe
-      var existingUserQuery = await database
-          .collection('Admins')
-          .where('email', isEqualTo: _mailController.text)
-          .get();
-
-      if (existingUserQuery.docs.isNotEmpty) {
-        // Usuario ya existe, mostrar toast de error
-        toastification.show(
-          context: context,
-          type: ToastificationType.error,
-          style: ToastificationStyle.flatColored,
-          title: const Text("Error"),
-          description: const Text("El usuario ya existe."),
-          alignment: Alignment.topRight,
-          autoCloseDuration: const Duration(milliseconds: 5000),
-          animationBuilder: (context, animation, alignment, child) {
-            return ScaleTransition(
-              scale: animation,
-              child: child,
-            );
-          },
-          borderRadius: BorderRadius.circular(12.0),
-          boxShadow: lowModeShadow,
-        );
-        return;
-      }
-
-      // Mostrar el toast de "Registrándote como administrador"
-      toastification.show(
-        context: context,
-        type: ToastificationType.info,
-        style: ToastificationStyle.flatColored,
-        title: const Text("Registrándote como administrador"),
-        description: const Text("Por favor, espere..."),
-        alignment: Alignment.topRight,
-        autoCloseDuration: const Duration(milliseconds: 400),
-        animationBuilder: (context, animation, alignment, child) {
-          return ScaleTransition(
-            scale: animation,
-            child: child,
-          );
-        },
-        icon: CircularProgressIndicator(
-          color: Theme.of(context).primaryColor,
-        ),
-        borderRadius: BorderRadius.circular(12.0),
-        boxShadow: lowModeShadow,
-        showProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: false,
-      );
-
-      // Encriptar la contraseña
-      var bytes =
-          utf8.encode(_passController.text); // datos que vamos a hashear
-      var digest = sha256.convert(bytes);
-
-      // Guardar el hash de la contraseña en la base de datos
-      await database.collection('Admins').doc().set({
-        "nombre": _nameController.text,
-        "apellido": _lastnameController.text,
-        "email": _mailController.text,
-        "password": digest.toString() // hash de la contraseña
-      });
-
-      // Mostrar toast de registro exitoso
-      toastification.show(
-        context: context,
-        type: ToastificationType.success,
-        style: ToastificationStyle.flatColored,
-        title: const Text("Registro exitoso"),
-        description: const Text("Te has registrado correctamente."),
-        alignment: Alignment.topRight,
-        autoCloseDuration: const Duration(milliseconds: 5000),
-        animationBuilder: (context, animation, alignment, child) {
-          return ScaleTransition(
-            scale: animation,
-            child: child,
-          );
-        },
-        borderRadius: BorderRadius.circular(12.0),
-        boxShadow: lowModeShadow,
-      );
-    } catch (e) {
-      // Manejar errores y mostrar un toast de error
-      if (kDebugMode) {
-        print(e);
-      }
-      toastification.show(
-        context: context,
-        type: ToastificationType.error,
-        style: ToastificationStyle.flatColored,
-        title: const Text("Error"),
-        description: const Text("Ocurrió un error durante el registro."),
-        alignment: Alignment.topRight,
-        autoCloseDuration: const Duration(milliseconds: 5000),
-        animationBuilder: (context, animation, alignment, child) {
-          return ScaleTransition(
-            scale: animation,
-            child: child,
-          );
-        },
-        borderRadius: BorderRadius.circular(12.0),
-        boxShadow: lowModeShadow,
-      );
-    }
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -269,9 +157,7 @@ class _RegisterAdminState extends State<RegisterAdmin> {
               labelText: 'Repite tu contraseña',
               suffixIcon: IconButton(
                 icon: Icon(
-                  _obscureTextRepeatPass
-                      ? Icons.visibility
-                      : Icons.visibility_off,
+                  _obscureTextRepeatPass ? Icons.visibility : Icons.visibility_off,
                 ),
                 onPressed: () {
                   setState(() {
@@ -293,11 +179,47 @@ class _RegisterAdminState extends State<RegisterAdmin> {
           FilledButton(
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
-              // Llamanado al método de registro:
-                await onregisterAdmin(context);
+                try {
+                  await _adminAuthProvider.registerAdmin(
+                    nombre: _nameController.text,
+                    apellido: _lastnameController.text,
+                    correo: _mailController.text,
+                    password: _passController.text,
+                    rol: 'Administrador',
+                  );
+
+                  // Notification de registro exitoso
+                  toastification.show(
+                    context: context,
+                    type: ToastificationType.success,
+                    style: ToastificationStyle.flat,
+                    title: const Text("Administrador registrado"),
+                    description: const Text("Puedes iniciar sesión"),
+                    alignment: Alignment.topCenter,
+                    autoCloseDuration: const Duration(seconds: 8),
+                  );
+                } catch (e) {
+                  // Notificación de registro fallido
+                  toastification.show(
+                    context: context,
+                    type: ToastificationType.error,
+                    style: ToastificationStyle.flat,
+                    title: const Text("Error al registrar administrador"),
+                    description: const Text("El correo ya se encuentra en uso."),
+                    alignment: Alignment.topCenter,
+                    autoCloseDuration: const Duration(seconds: 8),
+                  );
+                }
               }
             },
             child: const Text("Regístrate"),
+          ),
+          const SizedBox(height: 18),
+          FilledButton(
+            onPressed: () async {
+
+            },
+            child: const Text("Regístrate con Google"),
           ),
         ],
       ),

@@ -1,4 +1,4 @@
-package com.example.pin_logy
+package com.pauldev.pinlogy
 
 import io.flutter.embedding.android.FlutterActivity
 

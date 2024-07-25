@@ -50,21 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAqRMl2rHXzpPASrwEXdLf84WQrMBdjHP0',
-    appId: '1:1027424505923:web:9a744787c2feb733f004f6',
-    messagingSenderId: '1027424505923',
-    projectId: 'pin-logy',
-    authDomain: 'pin-logy.firebaseapp.com',
-    storageBucket: 'pin-logy.appspot.com',
-    measurementId: 'G-CS5YNFVGYW',
+    apiKey: 'AIzaSyBGNDLVlqPGp-WdtH4YIpJ1FkkwoaYyq0M',
+    appId: '1:62733633325:web:3fd6405658aa82411235a4',
+    messagingSenderId: '62733633325',
+    projectId: 'pin-logy-8f8ac',
+    authDomain: 'pin-logy-8f8ac.firebaseapp.com',
+    storageBucket: 'pin-logy-8f8ac.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAbZvTjdGX5_eQOcE7tGtS5oLxuknAnDJc',
-    appId: '1:1027424505923:android:45951642fc4fc5b2f004f6',
-    messagingSenderId: '1027424505923',
-    projectId: 'pin-logy',
-    storageBucket: 'pin-logy.appspot.com',
+    apiKey: 'AIzaSyBpwE3embytSN5hn2tL_GkBVEI3WG48H-U',
+    appId: '1:62733633325:android:eacd3356138aa4c71235a4',
+    messagingSenderId: '62733633325',
+    projectId: 'pin-logy-8f8ac',
+    storageBucket: 'pin-logy-8f8ac.appspot.com',
   );
 
 }
