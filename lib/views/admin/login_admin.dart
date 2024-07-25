@@ -135,7 +135,9 @@ class _LoginAdminState extends State<LoginAdmin> {
             mainAxisSize: MainAxisSize.max,
             children: [
               TextButton(
-                onPressed: () {},
+                onPressed: (){
+                  showPasswordResetBottomSheet(context, _authProvider);
+                },
                 child: Text("¿Olvidaste tu contraseña?", style: theme.textTheme.labelMedium, textAlign: TextAlign.center),
               ),
             ],
@@ -241,6 +243,82 @@ class _LoginAdminState extends State<LoginAdmin> {
           ),
         ),
       ],
+    );
+  }
+
+  void showPasswordResetBottomSheet(BuildContext context, AdminAuthProvider authProvider) {
+    final TextEditingController emailController = TextEditingController();
+    final _passKey = GlobalKey<FormState>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            top: 20,
+            left: 20,
+            right: 20,
+          ),
+          child: Form(
+            key: _passKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Recuperar Contraseña',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  validator: (value){
+                    if(value == null || value.isEmpty){
+                      return "Campo obligatorio";
+                    } else if(!value.contains('@')){
+                      return "Formato de correo incorrecto";
+                    }
+                    return null;
+                  },
+                  controller: emailController,
+                  decoration: const InputDecoration(labelText: 'Correo electrónico', border: OutlineInputBorder()),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                      if(_passKey.currentState!.validate()){
+                        try{
+                          await authProvider.sendPasswordResetEmail(emailController.text);
+                          toastification.show(
+                            context: context,
+                            type: ToastificationType.success,
+                            style: ToastificationStyle.flat,
+                            title: const Text("Recuperación de contraseña"),
+                            description: const Text("Correo enviado satisfactoriamente"),
+                            alignment: Alignment.topCenter,
+                            autoCloseDuration: const Duration(seconds: 8)
+                          );
+                          Navigator.pop(context);
+                        } catch (e){
+                          toastification.show(
+                            context: context,
+                            type: ToastificationType.error,
+                            style: ToastificationStyle.flat,
+                            title: const Text("Error"),
+                            description: const Text("Se produjo un error al enviar el correo de recuperación"),
+                            alignment: Alignment.topCenter,
+                            autoCloseDuration: const Duration(seconds: 8),
+                          );
+                      }
+                    }
+                  },
+                  child: const Text('Enviar'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

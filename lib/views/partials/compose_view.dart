@@ -168,7 +168,7 @@ class _ComposeViewState extends State<ComposeView> {
                     children: [
                       Icon(Icons.login_rounded),
                       SizedBox(width: 10),
-                      Text("Iniciar sesión - Usuario"),
+                      Text("Iniciar sesión"),
                     ],
                   ),
                 ),

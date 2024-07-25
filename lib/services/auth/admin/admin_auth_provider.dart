@@ -8,6 +8,7 @@ class AdminAuthProvider {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  //***************************************************************Métodos de correo electronico
   Future<void> registerAdmin({
     required String nombre,
     required String apellido,
@@ -16,9 +17,6 @@ class AdminAuthProvider {
     required String rol,
   }) async {
     try {
-      // Encriptar la contraseña
-      final hashedPassword = _hashPassword(password);
-
       // Crear usuario en Firebase Auth
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: correo,
@@ -28,12 +26,11 @@ class AdminAuthProvider {
       final user = userCredential.user;
 
       if (user != null) {
-        // Guardar datos del administrador en Firestore
+        // Guardar datos del administrador en Firestore sin la contraseña
         await _firestore.collection('Admins').doc(user.uid).set({
           'nombre': nombre,
           'apellido': apellido,
           'correo': correo,
-          'password': hashedPassword, // Guardar el hash de la contraseña
           'rol': rol,
         });
       }
@@ -63,29 +60,23 @@ class AdminAuthProvider {
         final adminDoc = await _firestore.collection('Admins').doc(user.uid).get();
 
         if (adminDoc.exists) {
-          final adminData = adminDoc.data();
-          final storedHashedPassword = adminData?['password'] ?? '';
-
-          // Hash de la contraseña proporcionada por el usuario
-          final hashedPassword = _hashPassword(password);
-
-          // Comparar los hashes
-          if (hashedPassword == storedHashedPassword) {
-            return user; // Contraseña correcta
-          } else {
-            print('Contraseña incorrecta.');
-            return null;
-          }
+          return user; // Contraseña correcta, autenticada por Firebase Auth
         } else {
-          print('No se encontró el documento del administrador.');
+          if (kDebugMode) {
+            print('No se encontró el documento del administrador.');
+          }
           return null;
         }
       } else {
-        print('No se pudo autenticar al usuario.');
+        if (kDebugMode) {
+          print('No se pudo autenticar al usuario.');
+        }
         return null;
       }
     } catch (e) {
-      print('Error al iniciar sesión: $e');
+      if (kDebugMode) {
+        print('Error al iniciar sesión: $e');
+      }
       rethrow;
     }
   }
@@ -94,17 +85,31 @@ class AdminAuthProvider {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
-      print('Usuario cerrado sesión correctamente.');
+      if (kDebugMode) {
+        print('Usuario cerrado sesión correctamente.');
+      }
     } catch (e) {
-      print('Error al cerrar sesión: $e');
+      if (kDebugMode) {
+        print('Error al cerrar sesión: $e');
+      }
       rethrow;
     }
   }
 
-
-  String _hashPassword(String password) {
-    final bytes = utf8.encode(password); // Convertir contraseña a bytes
-    final digest = sha256.convert(bytes); // Crear hash SHA-256
-    return digest.toString(); // Convertir hash a cadena hexadecimal
+  //Función para recuperar contraseña
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      if (kDebugMode) {
+        print("Password reset email sent");
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Failed to send password reset email: $e");
+      }
+    }
   }
+  //***************************************************************************
+
+//************************************************** Métodos con Google Account
 }
