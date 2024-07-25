@@ -1,13 +1,13 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/foundation.dart';
 
 class AdminAuthProvider {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Función paa registrar administrador
   Future<void> registerAdmin({
     required String nombre,
     required String apellido,
@@ -17,36 +17,34 @@ class AdminAuthProvider {
   }) async {
     try {
       // Encriptar la contraseña
-      final key = encrypt.Key.fromLength(32);
-      final iv = encrypt.IV.fromLength(16);
-      final encrypter = encrypt.Encrypter(encrypt.AES(key));
+      final hashedPassword = _hashPassword(password);
 
-      final encryptedPassword = encrypter.encrypt(password, iv: iv);
-
-      // Registrar el administrador en Firebase Auth
+      // Crear usuario en Firebase Auth
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: correo,
-        password: password, // Guarda la contraseña en texto plano solo para crear el usuario
+        password: password,
       );
 
-      // Guardar los datos en Firestore
-      await _firestore.collection('Admins').doc(userCredential.user?.uid).set({
-        'nombre': nombre,
-        'apellido': apellido,
-        'correo': correo,
-        'password': encryptedPassword.base64, // Guardar la contraseña encriptada
-        'rol': rol,
-      });
+      final user = userCredential.user;
 
+      if (user != null) {
+        // Guardar datos del administrador en Firestore
+        await _firestore.collection('Admins').doc(user.uid).set({
+          'nombre': nombre,
+          'apellido': apellido,
+          'correo': correo,
+          'password': hashedPassword, // Guardar el hash de la contraseña
+          'rol': rol,
+        });
+      }
     } catch (e) {
       if (kDebugMode) {
-        print('Error al registrar el administrador: $e');
+        print('Error al registrar administrador: $e');
       }
       rethrow;
     }
   }
 
-  // Función para iniciar sesión como administrador
   Future<User?> loginAdmin({
     required String correo,
     required String password,
@@ -66,22 +64,16 @@ class AdminAuthProvider {
 
         if (adminDoc.exists) {
           final adminData = adminDoc.data();
-          final encryptedPassword = adminData?['password'] ?? '';
+          final storedHashedPassword = adminData?['password'] ?? '';
 
-          // Desencriptar la contraseña
-          final key = encrypt.Key.fromLength(32);
-          final iv = encrypt.IV.fromLength(16);
-          final encrypter = encrypt.Encrypter(encrypt.AES(key));
+          // Hash de la contraseña proporcionada por el usuario
+          final hashedPassword = _hashPassword(password);
 
-          final decryptedPassword = encrypter.decrypt64(encryptedPassword, iv: iv);
-
-          // Comparar las contraseñas
-          if (decryptedPassword == password) {
+          // Comparar los hashes
+          if (hashedPassword == storedHashedPassword) {
             return user; // Contraseña correcta
           } else {
-            if (kDebugMode) {
-              print('Contraseña incorrecta.');
-            }
+            print('Contraseña incorrecta.');
             return null;
           }
         } else {
@@ -98,5 +90,21 @@ class AdminAuthProvider {
     }
   }
 
+  // Función para cerrar sesión con correo
+  Future<void> signOut() async {
+    try {
+      await _auth.signOut();
+      print('Usuario cerrado sesión correctamente.');
+    } catch (e) {
+      print('Error al cerrar sesión: $e');
+      rethrow;
+    }
+  }
 
+
+  String _hashPassword(String password) {
+    final bytes = utf8.encode(password); // Convertir contraseña a bytes
+    final digest = sha256.convert(bytes); // Crear hash SHA-256
+    return digest.toString(); // Convertir hash a cadena hexadecimal
+  }
 }

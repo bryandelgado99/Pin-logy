@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
 import 'package:pin_logy/design/theme.dart';
-import 'package:pin_logy/views/admin/admin_mainpage.dart';
+import 'package:pin_logy/views/admin/pages/admin_mainpage.dart';
 import 'package:pin_logy/views/admin/register_admin.dart';
 import 'package:toastification/toastification.dart';
 import '../../services/auth/admin/admin_auth_provider.dart';

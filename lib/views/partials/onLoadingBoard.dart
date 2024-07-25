@@ -29,7 +29,7 @@ class LoadingScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircularProgressIndicator(),
-                const SizedBox(height: 15,),
+                SizedBox(height: 15,),
                 Text("Iniciando sesión...")
               ]
             ), // Indicador de carga

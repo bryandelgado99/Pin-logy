@@ -22,10 +22,6 @@ class _RegisterAdminState extends State<RegisterAdmin> {
   bool _obscureTextPass = true;
   bool _obscureTextRepeatPass = true;
 
-  void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-  }
-
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
