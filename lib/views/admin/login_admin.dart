@@ -228,7 +228,28 @@ class _LoginAdminState extends State<LoginAdmin> {
         const SizedBox(height: 25),
         FilledButton(
           onPressed: () async {
-            // Agregar lógica para inicio de sesión con redes sociales aquí
+            try{
+              await _authProvider.signInWithGoogle();
+              toastification.show(
+                  context: context,
+                  type: ToastificationType.info,
+                  style: ToastificationStyle.flat,
+                  title: const Text("Iniciando sesión con Google"),
+                  description: const Text("Por favor, espere..."),
+                  alignment: Alignment.topCenter,
+                  autoCloseDuration: const Duration(seconds: 8)
+              );
+            }catch (e){
+              toastification.show(
+                  context: context,
+                  type: ToastificationType.error,
+                  style: ToastificationStyle.flat,
+                  title: const Text("Error de inicio de sesión"),
+                  description: const Text("El ususario ya existe con otro método de registro."),
+                  alignment: Alignment.topCenter,
+                  autoCloseDuration: const Duration(seconds: 8)
+              );
+            }
           },
           child: const Padding(
             padding: EdgeInsets.symmetric(vertical: 15),
@@ -266,10 +287,12 @@ class _LoginAdminState extends State<LoginAdmin> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Recuperar Contraseña',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
+                const SizedBox(height: 20),
+                Text("Ingresa el correo electrónico con el que te registraste y enviarte un enlace con el correo de recuperación de contraseña.", style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.justify),
                 const SizedBox(height: 20),
                 TextFormField(
                   validator: (value){
@@ -284,7 +307,7 @@ class _LoginAdminState extends State<LoginAdmin> {
                   decoration: const InputDecoration(labelText: 'Correo electrónico', border: OutlineInputBorder()),
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
+                FilledButton(
                   onPressed: () async {
                       if(_passKey.currentState!.validate()){
                         try{
@@ -314,6 +337,7 @@ class _LoginAdminState extends State<LoginAdmin> {
                   },
                   child: const Text('Enviar'),
                 ),
+                const SizedBox(height: 25,)
               ],
             ),
           ),

@@ -37,10 +37,12 @@ class _RegisterAdminState extends State<RegisterAdmin> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Text(
-            "Registro",
+            "Registro de Administrador",
             textAlign: TextAlign.center,
             style: theme.textTheme.headlineMedium,
           ),
+          const SizedBox(height: 25),
+          Text("Llena el siguiente formulario para formar parte del equipo de Pin-logy y utilizar nuestros servicios.", style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.justify,),
           const SizedBox(height: 25),
           onRegisterForm(),
           const SizedBox(height: 25),
@@ -171,52 +173,49 @@ class _RegisterAdminState extends State<RegisterAdmin> {
               return null;
             },
           ),
-          const SizedBox(height: 18),
-          FilledButton(
-            onPressed: () async {
-              if (_formKey.currentState!.validate()) {
-                try {
-                  await _adminAuthProvider.registerAdmin(
-                    nombre: _nameController.text,
-                    apellido: _lastnameController.text,
-                    correo: _mailController.text,
-                    password: _passController.text,
-                    rol: 'Administrador',
-                  );
+          const SizedBox(height: 25),
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: FilledButton(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  try {
+                    await _adminAuthProvider.registerAdmin(
+                      nombre: _nameController.text,
+                      apellido: _lastnameController.text,
+                      correo: _mailController.text,
+                      password: _passController.text,
+                      rol: 'Administrador',
+                    );
 
-                  // Notification de registro exitoso
-                  toastification.show(
-                    context: context,
-                    type: ToastificationType.success,
-                    style: ToastificationStyle.flat,
-                    title: const Text("Administrador registrado"),
-                    description: const Text("Puedes iniciar sesión"),
-                    alignment: Alignment.topCenter,
-                    autoCloseDuration: const Duration(seconds: 8),
-                  );
-                } catch (e) {
-                  // Notificación de registro fallido
-                  toastification.show(
-                    context: context,
-                    type: ToastificationType.error,
-                    style: ToastificationStyle.flat,
-                    title: const Text("Error al registrar administrador"),
-                    description: const Text("El correo ya se encuentra en uso."),
-                    alignment: Alignment.topCenter,
-                    autoCloseDuration: const Duration(seconds: 8),
-                  );
+                    // Notification de registro exitoso
+                    toastification.show(
+                      context: context,
+                      type: ToastificationType.success,
+                      style: ToastificationStyle.flat,
+                      title: const Text("Administrador registrado"),
+                      description: const Text("Puedes iniciar sesión"),
+                      alignment: Alignment.topCenter,
+                      autoCloseDuration: const Duration(seconds: 8),
+                    );
+                  } catch (e) {
+                    // Notificación de registro fallido
+                    toastification.show(
+                      context: context,
+                      type: ToastificationType.error,
+                      style: ToastificationStyle.flat,
+                      title: const Text("Error al registrar administrador"),
+                      description: const Text("El correo ya se encuentra en uso."),
+                      alignment: Alignment.topCenter,
+                      autoCloseDuration: const Duration(seconds: 8),
+                    );
+                  }
                 }
-              }
-            },
-            child: const Text("Regístrate"),
+              },
+              child: const Text("Regístrate"),
+            ),
           ),
           const SizedBox(height: 18),
-          FilledButton(
-            onPressed: () async {
-
-            },
-            child: const Text("Regístrate con Google"),
-          ),
         ],
       ),
     );

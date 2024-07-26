@@ -3,10 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AdminAuthProvider {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GoogleSignIn _googleAuth = GoogleSignIn();
 
   //***************************************************************Métodos de correo electronico
   Future<void> registerAdmin({
@@ -112,4 +114,43 @@ class AdminAuthProvider {
   //***************************************************************************
 
 //************************************************** Métodos con Google Account
+  Future<User?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleAuth.signIn();
+      if (googleUser == null) {
+        // El usuario canceló el inicio de sesión
+        return null;
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final user = userCredential.user;
+
+      if (user != null) {
+        // Verificar si el usuario ya está en Firestore
+        final adminDoc = await _firestore.collection('Admins').doc(user.uid).get();
+        if (!adminDoc.exists) {
+          // Si el documento no existe, crear uno nuevo
+          await _firestore.collection('Admins').doc(user.uid).set({
+            'nombre': user.displayName ?? '',
+            'correo': user.email ?? '',
+            'rol': 'Google',
+          });
+        }
+        return user;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error al iniciar sesión con Google: $e');
+      }
+      rethrow;
+    }
+    return null;
+  }
+
 }
