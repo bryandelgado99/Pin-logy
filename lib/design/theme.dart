@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class Themes {
   static ThemeData lightTheme = ThemeData(
-      primaryColor: const Color(0xff4A90E2),
+      primaryColor: const Color(0xffa386da),
       fontFamily: "Poppins",
-      primarySwatch: Colors.blue,
+      primarySwatch: Colors.purple,
       brightness: Brightness.light,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       appBarTheme: AppBarTheme(
@@ -75,9 +75,9 @@ class Themes {
 
   static ThemeData darkTheme = ThemeData(
     fontFamily: "Open Sans",
-    primaryColor: const Color(0xff658af7),
+    primaryColor: const Color(0xff7f4ae2),
     visualDensity: VisualDensity.adaptivePlatformDensity,
-    primarySwatch: Colors.blue,
+    primarySwatch: Colors.deepPurple,
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Colors.grey.shade900,
     appBarTheme: AppBarTheme(
