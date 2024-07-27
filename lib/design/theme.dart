@@ -23,7 +23,7 @@ class Themes {
       ),
       cardColor: Colors.grey.shade200,
       progressIndicatorTheme:
-          const ProgressIndicatorThemeData(color: Colors.red),
+          const ProgressIndicatorThemeData(color: Color.fromRGBO(67,33, 131, 1)),
       textTheme: const TextTheme(
           displayLarge: TextStyle(
               letterSpacing: -1.5,
@@ -75,7 +75,7 @@ class Themes {
 
   static ThemeData darkTheme = ThemeData(
     fontFamily: "Open Sans",
-    primaryColor: const Color(0xff7f4ae2),
+    primaryColor: const Color(0xff432183),
     visualDensity: VisualDensity.adaptivePlatformDensity,
     primarySwatch: Colors.deepPurple,
     brightness: Brightness.dark,
@@ -92,7 +92,7 @@ class Themes {
         hintStyle: const TextStyle(
           fontSize: 14,
         )),
-    cardColor: Colors.grey.shade700,
+    cardColor: const Color.fromRGBO(145, 103, 218, 1.0),
     progressIndicatorTheme:
         const ProgressIndicatorThemeData(color: Colors.white),
     textTheme: TextTheme(

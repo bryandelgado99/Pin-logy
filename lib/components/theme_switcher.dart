@@ -23,6 +23,9 @@ class CustomThemeSwitcher extends StatelessWidget {
             currentBrightness == Brightness.light
                 ? Icons.dark_mode_rounded
                 : Icons.light_mode_rounded,
+            color: currentBrightness == Brightness.light
+                ? Colors.black // Color para tema claro
+                : Colors.white, // Color para tema oscuro
           ),
           onPressed: () {
             final newBrightness = currentBrightness == Brightness.light

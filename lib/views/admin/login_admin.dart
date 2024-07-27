@@ -29,6 +29,7 @@ class _LoginAdminState extends State<LoginAdmin> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
           title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

@@ -28,6 +28,7 @@ class _LoginUserViewState extends State<LoginUserView> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

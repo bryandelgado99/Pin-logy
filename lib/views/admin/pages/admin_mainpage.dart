@@ -3,10 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:icons_plus/icons_plus.dart';
+import 'package:pin_logy/components/logout_Dialog.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
-import 'package:pin_logy/design/theme.dart';
 import 'package:pin_logy/services/auth/admin/admin_auth_provider.dart';
-import 'package:pin_logy/views/admin/login_admin.dart';
+import 'package:pin_logy/views/admin/pages/addUser_page.dart';
 
 class AdminMainpage extends StatefulWidget {
   const AdminMainpage({super.key});
@@ -21,6 +23,11 @@ class _AdminMainpageState extends State<AdminMainpage> {
   String _userLastName = '';
   String _userRole = '';
   final AdminAuthProvider _authProvider = AdminAuthProvider();
+
+  // Definición de la variable para seguimiento del tiempo del último toque
+  DateTime? _lastPressedTime;
+  static const int _doublePressInterval = 2; // Intervalo en segundos
+
 
   @override
   void initState() {
@@ -52,43 +59,84 @@ class _AdminMainpageState extends State<AdminMainpage> {
     }
   }
 
-  Future<void> _signOut() async {
-    try {
-      await _authProvider.signOut();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginAdmin()), // Reemplaza LoginPage con la pantalla de inicio de sesión
+  Future<bool> _onWillPop() async {
+    final currentTime = DateTime.now();
+    final isDoublePress = _lastPressedTime != null &&
+        currentTime.difference(_lastPressedTime!) <= const Duration(seconds: _doublePressInterval);
+
+    if (isDoublePress) {
+      SystemNavigator.pop();
+      return true;
+    } else {
+      // Muestra un mensaje que indica que el usuario debe presionar de nuevo para salir
+      _lastPressedTime = currentTime;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: const Text('Presiona nuevamente para salir'),
+          duration: const Duration(seconds: 2),
+        ),
       );
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error al cerrar sesión: $e');
-      }
-      // Mostrar mensaje de error o notificación si es necesario
+      return false;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Bienvenido $_userName", style: Theme.of(context).textTheme.headlineSmall),
-        backgroundColor: Theme.of(context).primaryColor,
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Row(
+            children: [
+              Icon(Icons.home,  color: Theme.of(context).appBarTheme.iconTheme?.color ?? Colors.white,),
+              const SizedBox(width: 12,),
+              Text("Inicio", style: Theme.of(context).appBarTheme.titleTextStyle),
+            ],
+          ),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+        drawer: _onDrawer(context), // Aquí se integra el Drawer personalizado
+        body: const Center(child: Text("Hello")),
+        floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            FloatingActionButton.small(
+              tooltip: 'Lista de ubicaciones',
+              heroTag: 'Lista de ubicaciones',
+              onPressed: (){},
+              child: const Icon(EvaIcons.map),
+            ),
+            const SizedBox(height: 12,),
+            FloatingActionButton.extended(
+              heroTag: 'Agregar usuario',
+              onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const AdduserPage()));
+              },
+              label: const Row(
+                children: [
+                  Text("Nuevo usuario"),
+                  SizedBox(width: 12,),
+                  Icon(EvaIcons.person_add),
+                ],
+              )
+            ),
+          ],
+        ),
       ),
-      drawer: _onDrawer(context), // Aquí se integra el Drawer personalizado
-      body: const Center(child: Text("Hello")),
     );
   }
 
-  Widget _onDrawer(BuildContext context){
-    var lightTheme = Themes.lightTheme;
-    var darkTheme = Themes.darkTheme;
+  Widget _onDrawer(BuildContext context) {
+    var lightTheme = ThemeData.light();
+    var darkTheme = ThemeData.dark();
 
     return Drawer(
       child: Column(
         children: [
           // Header Drawer
           UserAccountsDrawerHeader(
-            accountName: Text(_userName + ' ' + _userLastName),
+            accountName: Text('Bienvenido/a, $_userName $_userLastName'),
             accountEmail: Text(_userRole),
             currentAccountPicture: const CircleAvatar(
               child: Icon(Icons.person),
@@ -111,7 +159,7 @@ class _AdminMainpageState extends State<AdminMainpage> {
             title: const Text('Agregar usuario'),
             onTap: () {
               Navigator.pop(context);
-              //Navigator.pushNamed(context, '/add-user'); // Ajusta la ruta si es necesario
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const AdduserPage())); // Ajusta la ruta si es necesario
             },
           ),
           ListTile(
@@ -136,9 +184,12 @@ class _AdminMainpageState extends State<AdminMainpage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // Asegúrate de tener un CustomThemeSwitcher implementado
                 CustomThemeSwitcher(lightTheme: lightTheme, darkTheme: darkTheme),
                 ElevatedButton(
-                  onPressed: _signOut,
+                  onPressed: () {
+                    LogoutDialog.show(context, _authProvider);
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
