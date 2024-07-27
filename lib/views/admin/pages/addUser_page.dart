@@ -110,7 +110,6 @@ class _AdduserPageState extends State<AdduserPage> {
     );
   }
 
-
   Widget _onRegisterUserForm() {
     return Form(
       key: _registerKey,

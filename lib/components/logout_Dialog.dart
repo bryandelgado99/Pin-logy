@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // Para kDebugMode
 import 'package:pin_logy/services/auth/admin/admin_auth_provider.dart';
-import '../views/admin/login_admin.dart'; // Asegúrate de importar tu pantalla de inicio de sesión
+import 'package:pin_logy/views/partials/compose_view.dart';
 
 class LogoutDialog {
   static Future<bool> show(BuildContext context, AdminAuthProvider authProvider) async {
@@ -40,7 +40,7 @@ class LogoutDialog {
       // Usa un `Future.delayed` para asegurar que la navegación se maneje después de cerrar sesión
       Future.delayed(const Duration(milliseconds: 200), () {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const LoginAdmin()), // Reemplaza LoginAdmin con la pantalla de inicio de sesión
+          MaterialPageRoute(builder: (context) => const ComposeView()), // Reemplaza LoginAdmin con la pantalla de inicio de sesión
         );
       });
     } catch (e) {

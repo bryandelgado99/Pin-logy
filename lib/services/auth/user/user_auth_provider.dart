@@ -40,14 +40,13 @@ class UserAuthProvider {
     ));
   }
 
-  // Función para enviar un correo electrónico al usuario
   Future<void> _sendEmail(String toEmail, String password) async {
     final Email email = Email(
-      body: 'Hola,\n\nTu cuenta ha sido creada con éxito. Aquí están tus credenciales:\n\n'
+      body:'Hola Usuario/a,\n\nTu cuenta ha sido creada con éxito. Aquí están tus credenciales:\n\n'
           'Correo electrónico: $toEmail\n'
           'Contraseña: $password\n\n'
           'Por favor, cambia tu contraseña después de iniciar sesión.',
-      subject: 'Credenciales de acceso',
+      subject: 'Credenciales de acceso Pin-logy | Usuario',
       recipients: [toEmail],
       isHTML: false,
     );
@@ -58,6 +57,7 @@ class UserAuthProvider {
       if (kDebugMode) {
         print('Error al enviar el correo: $e');
       }
+      // Manejo adicional del error o notificación al usuario
     }
   }
 
