@@ -228,7 +228,7 @@ class _LoginAdminState extends State<LoginAdmin> {
         ),
         const SizedBox(height: 25),
         FilledButton(
-          onPressed: () async {
+          /*onPressed: () async {
             try{
               await _authProvider.signInWithGoogle();
               toastification.show(
@@ -251,7 +251,8 @@ class _LoginAdminState extends State<LoginAdmin> {
                   autoCloseDuration: const Duration(seconds: 8)
               );
             }
-          },
+          },*/
+          onPressed: (){},
           child: const Padding(
             padding: EdgeInsets.symmetric(vertical: 15),
             child: Row(
