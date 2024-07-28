@@ -16,12 +16,14 @@ class UserAuthProvider {
 
     try {
       // Buscar el documento del administrador en Firestore usando el UID del administrador
-      DocumentSnapshot adminDoc = await _firestore.collection('Admins').doc(currentUser.uid).get();
+      DocumentSnapshot adminDoc =
+          await _firestore.collection('Admins').doc(currentUser.uid).get();
 
       if (adminDoc.exists) {
-        return adminDoc.id;  // Devuelve el ID del documento, que corresponde al adminId
+        return adminDoc
+            .id; // Devuelve el ID del documento, que corresponde al adminId
       } else {
-        return null;  // El documento no existe
+        return null; // El documento no existe
       }
     } catch (e) {
       if (kDebugMode) {
@@ -33,16 +35,19 @@ class UserAuthProvider {
 
   // Función para generar una contraseña aleatoria
   String _generateRandomPassword({int length = 8}) {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const chars =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final rnd = Random.secure();
     return String.fromCharCodes(Iterable.generate(
-      length, (_) => chars.codeUnitAt(rnd.nextInt(chars.length)),
+      length,
+      (_) => chars.codeUnitAt(rnd.nextInt(chars.length)),
     ));
   }
 
   Future<void> _sendEmail(String toEmail, String password) async {
     final Email email = Email(
-      body:'Hola Usuario/a,\n\nTu cuenta ha sido creada con éxito. Aquí están tus credenciales:\n\n'
+      body:
+          'Hola Usuario/a,\n\nTu cuenta ha sido creada con éxito. Aquí están tus credenciales:\n\n'
           'Correo electrónico: $toEmail\n'
           'Contraseña: $password\n\n'
           'Por favor, cambia tu contraseña después de iniciar sesión.',
@@ -73,7 +78,8 @@ class UserAuthProvider {
 
     try {
       // Crear el usuario en Firebase Auth
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -90,7 +96,6 @@ class UserAuthProvider {
 
       // Enviar correo electrónico al usuario con la contraseña
       await _sendEmail(email, password);
-
     } catch (e) {
       if (kDebugMode) {
         print(e);

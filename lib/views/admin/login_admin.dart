@@ -29,25 +29,24 @@ class _LoginAdminState extends State<LoginAdmin> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-          title: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.admin_panel_settings_rounded, size: 25),
-                const SizedBox(width: 12),
-                Text("Perfil de Administración", style: Theme.of(context).textTheme.bodyLarge),
-              ]
-          ),
+          backgroundColor: Theme.of(context).primaryColor,
+          title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            const Icon(Icons.admin_panel_settings_rounded, size: 25),
+            const SizedBox(width: 12),
+            Text("Perfil de Administración",
+                style: Theme.of(context).textTheme.bodyLarge),
+          ]),
           actions: [
-            CustomThemeSwitcher(lightTheme: Themes.lightTheme, darkTheme: Themes.darkTheme)
-          ]
-      ),
+            CustomThemeSwitcher(
+                lightTheme: Themes.lightTheme, darkTheme: Themes.darkTheme)
+          ]),
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         child: Stack(
           children: [
             Positioned.fill(
-              child: Image.asset('assets/resource_abstract.png', fit: BoxFit.cover),
+              child: Image.asset('assets/resource_abstract.png',
+                  fit: BoxFit.cover),
             ),
             Positioned.fill(
               child: BackdropFilter(
@@ -63,7 +62,9 @@ class _LoginAdminState extends State<LoginAdmin> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Bienvenido", textAlign: TextAlign.center, style: Theme.of(context).textTheme.displayMedium),
+                      Text("Bienvenido",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.displayMedium),
                       const SizedBox(height: 24),
                       Text(
                         "En este perfil puedes monitorear las actividades de usuarios y su localización en tiempo real.",
@@ -115,7 +116,8 @@ class _LoginAdminState extends State<LoginAdmin> {
               border: const OutlineInputBorder(),
               labelText: 'Contraseña',
               suffixIcon: IconButton(
-                icon: Icon(_obscureText ? Icons.visibility : Icons.visibility_off),
+                icon: Icon(
+                    _obscureText ? Icons.visibility : Icons.visibility_off),
                 onPressed: () {
                   setState(() {
                     _obscureText = !_obscureText;
@@ -136,10 +138,12 @@ class _LoginAdminState extends State<LoginAdmin> {
             mainAxisSize: MainAxisSize.max,
             children: [
               TextButton(
-                onPressed: (){
+                onPressed: () {
                   showPasswordResetBottomSheet(context, _authProvider);
                 },
-                child: Text("¿Olvidaste tu contraseña?", style: theme.textTheme.labelMedium, textAlign: TextAlign.center),
+                child: Text("¿Olvidaste tu contraseña?",
+                    style: theme.textTheme.labelMedium,
+                    textAlign: TextAlign.center),
               ),
             ],
           ),
@@ -156,14 +160,17 @@ class _LoginAdminState extends State<LoginAdmin> {
                     builder: (context) => const RegisterAdmin(),
                   );
                 },
-                child: Text("¿Eres nuevo? Regístrate", style: theme.textTheme.labelMedium, textAlign: TextAlign.center),
+                child: Text("¿Eres nuevo? Regístrate",
+                    style: theme.textTheme.labelMedium,
+                    textAlign: TextAlign.center),
               ),
               FilledButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     // Mostrar pantalla de carga
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const LoadingScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const LoadingScreen()),
                     );
 
                     try {
@@ -174,32 +181,38 @@ class _LoginAdminState extends State<LoginAdmin> {
 
                       if (user != null) {
                         // Si el inicio de sesión es exitoso, navegar a la pantalla principal
-                        Navigator.of(context).pop(); // Regresar de la pantalla de carga
+                        Navigator.of(context)
+                            .pop(); // Regresar de la pantalla de carga
                         Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) => const AdminMainpage()),
+                          MaterialPageRoute(
+                              builder: (context) => const AdminMainpage()),
                         );
                       } else {
                         // Mostrar mensaje de error y regresar a la pantalla de inicio de sesión
-                        Navigator.of(context).pop(); // Regresar de la pantalla de carga
+                        Navigator.of(context)
+                            .pop(); // Regresar de la pantalla de carga
                         toastification.show(
                           context: context,
                           type: ToastificationType.error,
                           style: ToastificationStyle.flat,
                           title: const Text("Error al iniciar sesión"),
-                          description: const Text("Correo y/o contraseña incorrectos"),
+                          description:
+                              const Text("Correo y/o contraseña incorrectos"),
                           alignment: Alignment.topCenter,
                           autoCloseDuration: const Duration(seconds: 8),
                         );
                       }
                     } catch (e) {
                       // Manejar excepciones y mostrar mensaje de error
-                      Navigator.of(context).pop(); // Regresar de la pantalla de carga
+                      Navigator.of(context)
+                          .pop(); // Regresar de la pantalla de carga
                       toastification.show(
                         context: context,
                         type: ToastificationType.error,
                         style: ToastificationStyle.flat,
                         title: const Text("Error al iniciar sesión"),
-                        description: const Text("Correo y/o contraseña incorrectos"),
+                        description:
+                            const Text("Correo y/o contraseña incorrectos"),
                         alignment: Alignment.topCenter,
                         autoCloseDuration: const Duration(seconds: 8),
                       );
@@ -252,7 +265,7 @@ class _LoginAdminState extends State<LoginAdmin> {
               );
             }
           },*/
-          onPressed: (){},
+          onPressed: () {},
           child: const Padding(
             padding: EdgeInsets.symmetric(vertical: 15),
             child: Row(
@@ -269,9 +282,10 @@ class _LoginAdminState extends State<LoginAdmin> {
     );
   }
 
-  void showPasswordResetBottomSheet(BuildContext context, AdminAuthProvider authProvider) {
+  void showPasswordResetBottomSheet(
+      BuildContext context, AdminAuthProvider authProvider) {
     final TextEditingController emailController = TextEditingController();
-    final _passKey = GlobalKey<FormState>();
+    final passKey = GlobalKey<FormState>();
 
     showModalBottomSheet(
       context: context,
@@ -285,7 +299,7 @@ class _LoginAdminState extends State<LoginAdmin> {
             right: 20,
           ),
           child: Form(
-            key: _passKey,
+            key: passKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -294,52 +308,61 @@ class _LoginAdminState extends State<LoginAdmin> {
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 20),
-                Text("Ingresa el correo electrónico con el que te registraste y enviarte un enlace con el correo de recuperación de contraseña.", style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.justify),
+                Text(
+                    "Ingresa el correo electrónico con el que te registraste y enviarte un enlace con el correo de recuperación de contraseña.",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    textAlign: TextAlign.justify),
                 const SizedBox(height: 20),
                 TextFormField(
-                  validator: (value){
-                    if(value == null || value.isEmpty){
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
                       return "Campo obligatorio";
-                    } else if(!value.contains('@')){
+                    } else if (!value.contains('@')) {
                       return "Formato de correo incorrecto";
                     }
                     return null;
                   },
                   controller: emailController,
-                  decoration: const InputDecoration(labelText: 'Correo electrónico', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                      labelText: 'Correo electrónico',
+                      border: OutlineInputBorder()),
                 ),
                 const SizedBox(height: 20),
                 FilledButton(
                   onPressed: () async {
-                      if(_passKey.currentState!.validate()){
-                        try{
-                          await authProvider.sendPasswordResetEmail(emailController.text);
-                          toastification.show(
+                    if (passKey.currentState!.validate()) {
+                      try {
+                        await authProvider
+                            .sendPasswordResetEmail(emailController.text);
+                        toastification.show(
                             context: context,
                             type: ToastificationType.success,
                             style: ToastificationStyle.flat,
                             title: const Text("Recuperación de contraseña"),
-                            description: const Text("Correo enviado satisfactoriamente"),
+                            description:
+                                const Text("Correo enviado satisfactoriamente"),
                             alignment: Alignment.topCenter,
-                            autoCloseDuration: const Duration(seconds: 8)
-                          );
-                          Navigator.pop(context);
-                        } catch (e){
-                          toastification.show(
-                            context: context,
-                            type: ToastificationType.error,
-                            style: ToastificationStyle.flat,
-                            title: const Text("Error"),
-                            description: const Text("Se produjo un error al enviar el correo de recuperación"),
-                            alignment: Alignment.topCenter,
-                            autoCloseDuration: const Duration(seconds: 8),
-                          );
+                            autoCloseDuration: const Duration(seconds: 8));
+                        Navigator.pop(context);
+                      } catch (e) {
+                        toastification.show(
+                          context: context,
+                          type: ToastificationType.error,
+                          style: ToastificationStyle.flat,
+                          title: const Text("Error"),
+                          description: const Text(
+                              "Se produjo un error al enviar el correo de recuperación"),
+                          alignment: Alignment.topCenter,
+                          autoCloseDuration: const Duration(seconds: 8),
+                        );
                       }
                     }
                   },
                   child: const Text('Enviar'),
                 ),
-                const SizedBox(height: 25,)
+                const SizedBox(
+                  height: 25,
+                )
               ],
             ),
           ),

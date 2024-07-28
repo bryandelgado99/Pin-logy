@@ -22,8 +22,8 @@ class Themes {
         ),
       ),
       cardColor: Colors.grey.shade200,
-      progressIndicatorTheme:
-          const ProgressIndicatorThemeData(color: Color.fromRGBO(67,33, 131, 1)),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+          color: Color.fromRGBO(67, 33, 131, 1)),
       textTheme: const TextTheme(
           displayLarge: TextStyle(
               letterSpacing: -1.5,

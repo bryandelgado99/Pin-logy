@@ -13,7 +13,8 @@ class CustomThemeSwitcher extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentBrightness = ThemeModelInheritedNotifier.of(context).theme.brightness;
+    final currentBrightness =
+        ThemeModelInheritedNotifier.of(context).theme.brightness;
 
     return ThemeSwitcher(
       clipper: const ThemeSwitcherCircleClipper(),
@@ -31,7 +32,7 @@ class CustomThemeSwitcher extends StatelessWidget {
             final newBrightness = currentBrightness == Brightness.light
                 ? Brightness.dark
                 : Brightness.light;
-        
+
             ThemeSwitcher.of(context).changeTheme(
               theme: newBrightness == Brightness.light ? lightTheme : darkTheme,
               isReversed: newBrightness == Brightness.light,

@@ -1,3 +1,4 @@
+// ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import '../../../services/auth/user/user_auth_provider.dart';
@@ -22,7 +23,8 @@ class _AdduserPageState extends State<AdduserPage> {
         // Obtener el adminId del administrador en sesión
         String? adminId = await _authProvider.getAdminId();
         if (adminId == null) {
-          throw Exception('No se pudo obtener el adminId del administrador en sesión.');
+          throw Exception(
+              'No se pudo obtener el adminId del administrador en sesión.');
         }
 
         await _authProvider.registerUser(
@@ -33,7 +35,9 @@ class _AdduserPageState extends State<AdduserPage> {
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Usuario registrado con éxito. Se ha enviado un correo con la contraseña.')),
+          const SnackBar(
+              content: Text(
+                  'Usuario registrado con éxito. Se ha enviado un correo con la contraseña.')),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -54,7 +58,8 @@ class _AdduserPageState extends State<AdduserPage> {
           children: [
             Icon(
               EvaIcons.person_add,
-              color: Theme.of(context).appBarTheme.iconTheme?.color ?? Colors.white,
+              color: Theme.of(context).appBarTheme.iconTheme?.color ??
+                  Colors.white,
             ),
             const SizedBox(width: 12),
             Text(
@@ -84,7 +89,9 @@ class _AdduserPageState extends State<AdduserPage> {
                 ),
                 const SizedBox(height: 30),
                 _onRegisterUserForm(),
-                const SizedBox(height: 100), // Espacio para que el contenido no esté sobre el botón
+                const SizedBox(
+                    height:
+                        100), // Espacio para que el contenido no esté sobre el botón
               ],
             ),
           ),
