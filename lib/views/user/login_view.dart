@@ -34,7 +34,7 @@ class _LoginUserViewState extends State<LoginUserView> {
           children: [
             const Icon(
               Icons.supervised_user_circle_rounded,
-              size:25,
+              size: 25,
             ),
             const SizedBox(width: 12),
             Text(
@@ -209,7 +209,7 @@ class _LoginUserViewState extends State<LoginUserView> {
                     closeOnClick: false,
                     pauseOnHover: false,
                   );
-                } 
+                }
               },
               child: const Text("Ingresar"))
         ],

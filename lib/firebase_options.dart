@@ -65,5 +65,4 @@ class DefaultFirebaseOptions {
     projectId: 'pin-logy-8f8ac',
     storageBucket: 'pin-logy-8f8ac.appspot.com',
   );
-
 }

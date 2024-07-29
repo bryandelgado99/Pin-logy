@@ -12,16 +12,14 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
-  void initState(){
+  void initState() {
     super.initState();
     redirectPage(context);
   }
 
   @override
   Widget build(BuildContext context) {
-
     var theme = Theme.of(context);
 
     return Scaffold(
@@ -45,16 +43,24 @@ class _SplashScreenState extends State<SplashScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.max,
             children: [
-              Center(child: Image.asset("assets/icon.png", scale: 2.5,)),
+              Center(
+                  child: Image.asset(
+                "assets/icon.png",
+                scale: 2.5,
+              )),
               Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(color: theme.primaryColor,),
-                  const SizedBox(height: 25),
-                  Text("Cargando componentes", style: theme.textTheme.titleMedium,)
-                ]
-              )
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      color: theme.primaryColor,
+                    ),
+                    const SizedBox(height: 25),
+                    Text(
+                      "Cargando componentes",
+                      style: theme.textTheme.titleMedium,
+                    )
+                  ])
             ],
           )
         ],
@@ -62,10 +68,9 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  Future <void> redirectPage(BuildContext context) async{
-     await Future.delayed(
-       const Duration(seconds: 10)
-     );
-     Navigator.push(context, MaterialPageRoute(builder: (context)=> const ComposeView()));
+  Future<void> redirectPage(BuildContext context) async {
+    await Future.delayed(const Duration(seconds: 10));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const ComposeView()));
   }
 }

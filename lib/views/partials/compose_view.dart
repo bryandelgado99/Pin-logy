@@ -161,7 +161,8 @@ class _ComposeViewState extends State<ComposeView> {
                           builder: (context) => const LoginUserView()));
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -190,7 +191,8 @@ class _ComposeViewState extends State<ComposeView> {
                           builder: (context) => const LoginAdmin()));
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,

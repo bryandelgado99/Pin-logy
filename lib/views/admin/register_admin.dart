@@ -42,7 +42,11 @@ class _RegisterAdminState extends State<RegisterAdmin> {
             style: theme.textTheme.headlineMedium,
           ),
           const SizedBox(height: 25),
-          Text("Llena el siguiente formulario para formar parte del equipo de Pin-logy y utilizar nuestros servicios.", style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.justify,),
+          Text(
+            "Llena el siguiente formulario para formar parte del equipo de Pin-logy y utilizar nuestros servicios.",
+            style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.justify,
+          ),
           const SizedBox(height: 25),
           onRegisterForm(),
           const SizedBox(height: 25),
@@ -155,7 +159,9 @@ class _RegisterAdminState extends State<RegisterAdmin> {
               labelText: 'Repite tu contraseña',
               suffixIcon: IconButton(
                 icon: Icon(
-                  _obscureTextRepeatPass ? Icons.visibility : Icons.visibility_off,
+                  _obscureTextRepeatPass
+                      ? Icons.visibility
+                      : Icons.visibility_off,
                 ),
                 onPressed: () {
                   setState(() {
@@ -205,7 +211,8 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                       type: ToastificationType.error,
                       style: ToastificationStyle.flat,
                       title: const Text("Error al registrar administrador"),
-                      description: const Text("El correo ya se encuentra en uso."),
+                      description:
+                          const Text("El correo ya se encuentra en uso."),
                       alignment: Alignment.topCenter,
                       autoCloseDuration: const Duration(seconds: 8),
                     );

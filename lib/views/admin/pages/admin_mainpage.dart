@@ -9,6 +9,7 @@ import 'package:pin_logy/components/logout_Dialog.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
 import 'package:pin_logy/services/auth/admin/admin_auth_provider.dart';
 import 'package:pin_logy/views/admin/pages/addUser_page.dart';
+import 'package:pin_logy/views/admin/pages/userList_page.dart';
 
 class AdminMainpage extends StatefulWidget {
   const AdminMainpage({super.key});
@@ -28,20 +29,21 @@ class _AdminMainpageState extends State<AdminMainpage> {
   DateTime? _lastPressedTime;
   static const int _doublePressInterval = 2; // Intervalo en segundos
 
-
   @override
   void initState() {
     super.initState();
     _getUserData();
   }
 
-
   Future<void> _getUserData() async {
     try {
       _user = FirebaseAuth.instance.currentUser;
       if (_user != null) {
         final uid = _user!.uid;
-        final userDoc = await FirebaseFirestore.instance.collection('Admins').doc(uid).get();
+        final userDoc = await FirebaseFirestore.instance
+            .collection('Admins')
+            .doc(uid)
+            .get();
 
         if (userDoc.exists) {
           final userData = userDoc.data();
@@ -62,7 +64,8 @@ class _AdminMainpageState extends State<AdminMainpage> {
   Future<bool> _onWillPop() async {
     final currentTime = DateTime.now();
     final isDoublePress = _lastPressedTime != null &&
-        currentTime.difference(_lastPressedTime!) <= const Duration(seconds: _doublePressInterval);
+        currentTime.difference(_lastPressedTime!) <=
+            const Duration(seconds: _doublePressInterval);
 
     if (isDoublePress) {
       SystemNavigator.pop();
@@ -72,8 +75,8 @@ class _AdminMainpageState extends State<AdminMainpage> {
       _lastPressedTime = currentTime;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: const Text('Presiona nuevamente para salir'),
-          duration: const Duration(seconds: 2),
+          content: Text('Presiona nuevamente para salir'),
+          duration: Duration(seconds: 2),
         ),
       );
       return false;
@@ -88,9 +91,16 @@ class _AdminMainpageState extends State<AdminMainpage> {
         appBar: AppBar(
           title: Row(
             children: [
-              Icon(Icons.home,  color: Theme.of(context).appBarTheme.iconTheme?.color ?? Colors.white,),
-              const SizedBox(width: 12,),
-              Text("Inicio", style: Theme.of(context).appBarTheme.titleTextStyle),
+              Icon(
+                Icons.home,
+                color: Theme.of(context).appBarTheme.iconTheme?.color ??
+                    Colors.white,
+              ),
+              const SizedBox(
+                width: 12,
+              ),
+              Text("Inicio",
+                  style: Theme.of(context).appBarTheme.titleTextStyle),
             ],
           ),
           backgroundColor: Theme.of(context).primaryColor,
@@ -104,23 +114,29 @@ class _AdminMainpageState extends State<AdminMainpage> {
             FloatingActionButton.small(
               tooltip: 'Lista de ubicaciones',
               heroTag: 'Lista de ubicaciones',
-              onPressed: (){},
+              onPressed: () {},
               child: const Icon(EvaIcons.map),
             ),
-            const SizedBox(height: 12,),
-            FloatingActionButton.extended(
-              heroTag: 'Agregar usuario',
-              onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const AdduserPage()));
-              },
-              label: const Row(
-                children: [
-                  Text("Nuevo usuario"),
-                  SizedBox(width: 12,),
-                  Icon(EvaIcons.person_add),
-                ],
-              )
+            const SizedBox(
+              height: 12,
             ),
+            FloatingActionButton.extended(
+                heroTag: 'Agregar usuario',
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AdduserPage()));
+                },
+                label: const Row(
+                  children: [
+                    Text("Nuevo usuario"),
+                    SizedBox(
+                      width: 12,
+                    ),
+                    Icon(EvaIcons.person_add),
+                  ],
+                )),
           ],
         ),
       ),
@@ -159,7 +175,9 @@ class _AdminMainpageState extends State<AdminMainpage> {
             title: const Text('Agregar usuario'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const AdduserPage())); // Ajusta la ruta si es necesario
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const AdduserPage()));
+              // Ajusta la ruta si es necesario
             },
           ),
           ListTile(
@@ -167,7 +185,10 @@ class _AdminMainpageState extends State<AdminMainpage> {
             title: const Text('Lista de usuarios'),
             onTap: () {
               Navigator.pop(context);
-              //Navigator.pushNamed(context, '/user-list'); // Ajusta la ruta si es necesario
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const UserListPage()),
+              );
             },
           ),
           ListTile(
@@ -185,7 +206,8 @@ class _AdminMainpageState extends State<AdminMainpage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Asegúrate de tener un CustomThemeSwitcher implementado
-                CustomThemeSwitcher(lightTheme: lightTheme, darkTheme: darkTheme),
+                CustomThemeSwitcher(
+                    lightTheme: lightTheme, darkTheme: darkTheme),
                 ElevatedButton(
                   onPressed: () {
                     LogoutDialog.show(context, _authProvider);
@@ -195,7 +217,8 @@ class _AdminMainpageState extends State<AdminMainpage> {
                     children: [
                       const Icon(Icons.logout_rounded),
                       const SizedBox(width: 8),
-                      Text("Salir", style: Theme.of(context).textTheme.bodySmall),
+                      Text("Salir",
+                          style: Theme.of(context).textTheme.bodySmall),
                     ],
                   ),
                 ),

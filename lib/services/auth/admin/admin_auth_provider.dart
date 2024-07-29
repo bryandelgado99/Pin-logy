@@ -18,7 +18,8 @@ class AdminAuthProvider {
   }) async {
     try {
       // Crear usuario en Firebase Auth
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: correo,
         password: password,
       );
@@ -57,7 +58,8 @@ class AdminAuthProvider {
 
       if (user != null) {
         // Obtener los datos del administrador desde Firestore
-        final adminDoc = await _firestore.collection('Admins').doc(user.uid).get();
+        final adminDoc =
+            await _firestore.collection('Admins').doc(user.uid).get();
 
         if (adminDoc.exists) {
           return user; // Contraseña correcta, autenticada por Firebase Auth
@@ -120,18 +122,21 @@ class AdminAuthProvider {
         return null;
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
       final user = userCredential.user;
 
       if (user != null) {
         // Verificar si el usuario ya está en Firestore
-        final adminDoc = await _firestore.collection('Admins').doc(user.uid).get();
+        final adminDoc =
+            await _firestore.collection('Admins').doc(user.uid).get();
         if (!adminDoc.exists) {
           // Si el documento no existe, crear uno nuevo
           await _firestore.collection('Admins').doc(user.uid).set({
@@ -150,5 +155,4 @@ class AdminAuthProvider {
     }
     return null;
   }
-
 }
