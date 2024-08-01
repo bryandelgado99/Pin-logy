@@ -1,4 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -10,6 +9,7 @@ import 'package:pin_logy/components/theme_switcher.dart';
 import 'package:pin_logy/services/auth/admin/admin_auth_provider.dart';
 import 'package:pin_logy/views/admin/pages/addUser_page.dart';
 import 'package:pin_logy/views/admin/pages/userList_page.dart';
+import 'package:pin_logy/views/admin/pages/locationHistory_page.dart';
 
 class AdminMainpage extends StatefulWidget {
   const AdminMainpage({super.key});
@@ -25,7 +25,6 @@ class _AdminMainpageState extends State<AdminMainpage> {
   String _userRole = '';
   final AdminAuthProvider _authProvider = AdminAuthProvider();
 
-  // Definición de la variable para seguimiento del tiempo del último toque
   DateTime? _lastPressedTime;
   static const int _doublePressInterval = 2; // Intervalo en segundos
 
@@ -71,7 +70,6 @@ class _AdminMainpageState extends State<AdminMainpage> {
       SystemNavigator.pop();
       return true;
     } else {
-      // Muestra un mensaje que indica que el usuario debe presionar de nuevo para salir
       _lastPressedTime = currentTime;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -105,7 +103,7 @@ class _AdminMainpageState extends State<AdminMainpage> {
           ),
           backgroundColor: Theme.of(context).primaryColor,
         ),
-        drawer: _onDrawer(context), // Aquí se integra el Drawer personalizado
+        drawer: _onDrawer(context),
         body: const Center(child: Text("Hello")),
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -114,29 +112,39 @@ class _AdminMainpageState extends State<AdminMainpage> {
             FloatingActionButton.small(
               tooltip: 'Lista de ubicaciones',
               heroTag: 'Lista de ubicaciones',
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LocationHistoryPage(),
+                  ),
+                );
+              },
               child: const Icon(EvaIcons.map),
             ),
             const SizedBox(
               height: 12,
             ),
             FloatingActionButton.extended(
-                heroTag: 'Agregar usuario',
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AdduserPage()));
-                },
-                label: const Row(
-                  children: [
-                    Text("Nuevo usuario"),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    Icon(EvaIcons.person_add),
-                  ],
-                )),
+              heroTag: 'Agregar usuario',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AdduserPage(),
+                  ),
+                );
+              },
+              label: const Row(
+                children: [
+                  Text("Nuevo usuario"),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  Icon(EvaIcons.person_add),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -150,7 +158,6 @@ class _AdminMainpageState extends State<AdminMainpage> {
     return Drawer(
       child: Column(
         children: [
-          // Header Drawer
           UserAccountsDrawerHeader(
             accountName: Text('Bienvenido/a, $_userName $_userLastName'),
             accountEmail: Text(_userRole),
@@ -161,13 +168,11 @@ class _AdminMainpageState extends State<AdminMainpage> {
               color: Theme.of(context).primaryColor,
             ),
           ),
-          // Menu Items
           ListTile(
             leading: const Icon(Icons.home),
             title: const Text('Inicio'),
             onTap: () {
               Navigator.pop(context);
-              //Navigator.pushNamed(context, '/home'); // Ajusta la ruta si es necesario
             },
           ),
           ListTile(
@@ -175,9 +180,12 @@ class _AdminMainpageState extends State<AdminMainpage> {
             title: const Text('Agregar usuario'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const AdduserPage()));
-              // Ajusta la ruta si es necesario
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AdduserPage(),
+                ),
+              );
             },
           ),
           ListTile(
@@ -187,7 +195,9 @@ class _AdminMainpageState extends State<AdminMainpage> {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const UserListPage()),
+                MaterialPageRoute(
+                  builder: (context) => const UserListPage(),
+                ),
               );
             },
           ),
@@ -196,18 +206,24 @@ class _AdminMainpageState extends State<AdminMainpage> {
             title: const Text('Historial de ubicaciones'),
             onTap: () {
               Navigator.pop(context);
-              //Navigator.pushNamed(context, '/location-list'); // Ajusta la ruta si es necesario
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LocationHistoryPage(),
+                ),
+              );
             },
           ),
-          const Spacer(), // Empuja el botón hacia abajo
+          const Spacer(),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Asegúrate de tener un CustomThemeSwitcher implementado
                 CustomThemeSwitcher(
-                    lightTheme: lightTheme, darkTheme: darkTheme),
+                  lightTheme: lightTheme,
+                  darkTheme: darkTheme,
+                ),
                 ElevatedButton(
                   onPressed: () {
                     LogoutDialog.show(context, _authProvider);
@@ -217,8 +233,10 @@ class _AdminMainpageState extends State<AdminMainpage> {
                     children: [
                       const Icon(Icons.logout_rounded),
                       const SizedBox(width: 8),
-                      Text("Salir",
-                          style: Theme.of(context).textTheme.bodySmall),
+                      Text(
+                        "Salir",
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                     ],
                   ),
                 ),
