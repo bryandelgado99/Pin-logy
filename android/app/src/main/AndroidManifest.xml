@@ -4,6 +4,10 @@
         android:label="pin_logy"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBt2O_AazWmRQ48nNF5Br9dlhtd0GDWIRQ"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
