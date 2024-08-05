@@ -18,6 +18,7 @@ class _LocationHistoryPageState extends State<LocationHistoryPage> {
     _getTerrains();
   }
 
+// Obtener la froma del terreno
   Future<void> _getTerrains() async {
     FirebaseFirestore.instance
         .collection('terrains')

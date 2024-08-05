@@ -266,10 +266,10 @@ class _AdminMainpageState extends State<AdminMainpage> {
               ),
             );
           }
-          return null; // Si no es un mapa válido, retorna null
+          return null;
         })
         .whereType<Marker>()
-        .toSet(); // Filtra los valores `null` y convierte a un `Set<Marker>`
+        .toSet();
   }
 
   Widget _onDrawer(BuildContext context) {
