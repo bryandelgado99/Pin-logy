@@ -13,6 +13,37 @@ class _LocationHistoryPageState extends State<LocationHistoryPage> {
   String? _selectedUserId;
 
   @override
+  void initState() {
+    super.initState();
+    _getTerrains();
+  }
+
+// Obtener la froma del terreno
+  Future<void> _getTerrains() async {
+    FirebaseFirestore.instance
+        .collection('terrains')
+        .snapshots()
+        .listen((snapshot) {
+      Set<Polygon> newPolygons = {};
+      for (var doc in snapshot.docs) {
+        List<LatLng> points = [];
+        for (var point in doc['points']) {
+          points.add(LatLng(point.latitude, point.longitude));
+        }
+        newPolygons.add(
+          Polygon(
+            polygonId: PolygonId(doc.id),
+            points: points,
+            strokeWidth: 2,
+            fillColor: Colors.green.withOpacity(0.5),
+          ),
+        );
+      }
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -66,13 +97,66 @@ class _LocationHistoryPageState extends State<LocationHistoryPage> {
           .doc(userId)
           .get(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        var locations = snapshot.data!.data() as Map<String, dynamic>?;
+        if (snapshot.hasError) {
+          print('Error fetching user location data: ${snapshot.error}');
+          return const Card(
+            margin: EdgeInsets.all(8.0),
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text('Error al cargar datos'),
+            ),
+          );
+        }
 
-        if (locations == null || locations.isEmpty) {
+        if (!snapshot.hasData || snapshot.data!.data() == null) {
+          print('No data found for user ID: $userId');
+          return const Card(
+            margin: EdgeInsets.all(8.0),
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text('Sin historial reciente'),
+            ),
+          );
+        }
+
+        var data = snapshot.data!.data() as Map<String, dynamic>?;
+
+        print('Data fetched for user ID: $userId: $data'); // Depuración
+
+        if (data == null ||
+            !data.containsKey('locations') ||
+            (data['locations'] as List).isEmpty) {
+          print('No location data for user ID: $userId');
+          return const Card(
+            margin: EdgeInsets.all(8.0),
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text('Sin historial reciente'),
+            ),
+          );
+        }
+
+        var locationList =
+            (data['locations'] as List<dynamic>).cast<Map<String, dynamic>>();
+        print('Locations list: $locationList'); // Depuración
+
+        List<Marker> markers = locationList.map((location) {
+          var lat = (location['latitude'] as num?)?.toDouble() ?? 0.0;
+          var lng = (location['longitude'] as num?)?.toDouble() ?? 0.0;
+          return Marker(
+            markerId: MarkerId(location['id'] ?? 'unknown'),
+            position: LatLng(lat, lng),
+            infoWindow: InfoWindow(title: location['name'] ?? 'No Name'),
+          );
+        }).toList();
+
+        print('Markers: $markers'); // Depuración
+
+        if (markers.isEmpty) {
           return const Card(
             margin: EdgeInsets.all(8.0),
             child: Padding(
@@ -100,25 +184,16 @@ class _LocationHistoryPageState extends State<LocationHistoryPage> {
                   child: GoogleMap(
                     initialCameraPosition: CameraPosition(
                       target: LatLng(
-                        locations['latitude'] ?? 0.0,
-                        locations['longitude'] ?? 0.0,
+                        markers.isNotEmpty
+                            ? markers.first.position.latitude
+                            : 0.0,
+                        markers.isNotEmpty
+                            ? markers.first.position.longitude
+                            : 0.0,
                       ),
                       zoom: 12,
                     ),
-                    markers: Set<Marker>.of(
-                      locations.entries.map(
-                        (entry) {
-                          var loc = entry.value;
-                          return Marker(
-                            markerId: MarkerId(entry.key),
-                            position: LatLng(
-                              loc['latitude'] ?? 0.0,
-                              loc['longitude'] ?? 0.0,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                    markers: Set<Marker>.of(markers),
                   ),
                 ),
               ],
