@@ -11,7 +11,6 @@ import 'package:pin_logy/services/auth/admin/admin_auth_provider.dart';
 import 'package:pin_logy/views/admin/pages/addUser_page.dart';
 import 'package:pin_logy/views/admin/pages/userList_page.dart';
 import 'package:pin_logy/views/admin/pages/locationHistory_page.dart';
-import 'dart:math';
 
 class AdminMainpage extends StatefulWidget {
   const AdminMainpage({super.key});
@@ -27,17 +26,17 @@ class _AdminMainpageState extends State<AdminMainpage> {
   String _userRole = '';
   final AdminAuthProvider _authProvider = AdminAuthProvider();
 
-  List<Map<String, dynamic>> _randomUsersWithLocations = [];
+  List<Map<String, dynamic>> _usersWithLocations = [];
   bool _isLoading = true;
 
   DateTime? _lastPressedTime;
-  static const int _doublePressInterval = 2;
+  static const int _doublePressInterval = 2; // Intervalo en segundos
 
   @override
   void initState() {
     super.initState();
     _getUserData();
-    _getRandomUsersWithLocations();
+    _getUsersWithLocations();
   }
 
   Future<void> _getUserData() async {
@@ -66,12 +65,14 @@ class _AdminMainpageState extends State<AdminMainpage> {
     }
   }
 
-  Future<void> _getRandomUsersWithLocations() async {
+  Future<void> _getUsersWithLocations() async {
     try {
       final usersSnapshot =
           await FirebaseFirestore.instance.collection('Users').get();
       if (usersSnapshot.docs.isNotEmpty) {
-        final selectedUsers = (usersSnapshot.docs..shuffle()).take(3).toList();
+        final selectedUsers = (usersSnapshot.docs..shuffle())
+            .take(4)
+            .toList(); // Obtener 4 usuarios
         List<Map<String, dynamic>> usersWithLocations = [];
 
         for (var userDoc in selectedUsers) {
@@ -82,20 +83,17 @@ class _AdminMainpageState extends State<AdminMainpage> {
               .doc(userId)
               .get();
 
-          var locations = locationsSnapshot.data();
-          if (locations != null) {
-            usersWithLocations.add({
-              'name': user['nombre'],
-              'lastName': user['apellido'],
-              'locations': locations,
-            });
-          } else {
-            print('No se encontraron ubicaciones para el usuario $userId');
-          }
+          var locations = locationsSnapshot.data() ?? {};
+
+          usersWithLocations.add({
+            'name': user['name'] ?? 'Nombre no disponible',
+            'lastName': user['lastName'] ?? 'Apellido no disponible',
+            'locations': locations,
+          });
         }
 
         setState(() {
-          _randomUsersWithLocations = usersWithLocations;
+          _usersWithLocations = usersWithLocations;
           _isLoading = false;
         });
       } else {
@@ -160,7 +158,7 @@ class _AdminMainpageState extends State<AdminMainpage> {
         drawer: _onDrawer(context),
         body: _isLoading
             ? const Center(child: CircularProgressIndicator())
-            : _buildRandomUserMaps(),
+            : _buildUserMaps(),
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -207,19 +205,19 @@ class _AdminMainpageState extends State<AdminMainpage> {
     );
   }
 
-  Widget _buildRandomUserMaps() {
-    if (_randomUsersWithLocations.isEmpty) {
+  Widget _buildUserMaps() {
+    if (_usersWithLocations.isEmpty) {
       return const Center(
           child: Text('No se encontraron usuarios con ubicaciones.'));
     }
 
     return ListView.builder(
-      itemCount: _randomUsersWithLocations.length,
+      itemCount: _usersWithLocations.length,
       itemBuilder: (context, index) {
-        var user = _randomUsersWithLocations[index];
+        var user = _usersWithLocations[index];
         var name = user['name'];
         var lastName = user['lastName'];
-        var locations = user['locations'];
+        var locations = user['locations'] as Map<String, dynamic>;
 
         return Card(
           margin: const EdgeInsets.all(8.0),
@@ -239,25 +237,12 @@ class _AdminMainpageState extends State<AdminMainpage> {
                   child: GoogleMap(
                     initialCameraPosition: CameraPosition(
                       target: LatLng(
-                        locations['latitude'] ?? 0.0,
-                        locations['longitude'] ?? 0.0,
+                        locations['latitude']?.toDouble() ?? 0.0,
+                        locations['longitude']?.toDouble() ?? 0.0,
                       ),
                       zoom: 12,
                     ),
-                    markers: Set<Marker>.of(
-                      locations.entries.map(
-                        (entry) {
-                          var loc = entry.value;
-                          return Marker(
-                            markerId: MarkerId(entry.key),
-                            position: LatLng(
-                              loc['latitude'] ?? 0.0,
-                              loc['longitude'] ?? 0.0,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                    markers: _buildMarkers(locations),
                   ),
                 ),
               ],
@@ -266,6 +251,25 @@ class _AdminMainpageState extends State<AdminMainpage> {
         );
       },
     );
+  }
+
+  Set<Marker> _buildMarkers(Map<String, dynamic> locations) {
+    return locations.entries
+        .map((entry) {
+          var loc = entry.value;
+          if (loc is Map<String, dynamic>) {
+            return Marker(
+              markerId: MarkerId(entry.key),
+              position: LatLng(
+                loc['latitude']?.toDouble() ?? 0.0,
+                loc['longitude']?.toDouble() ?? 0.0,
+              ),
+            );
+          }
+          return null; // Si no es un mapa válido, retorna null
+        })
+        .whereType<Marker>()
+        .toSet(); // Filtra los valores `null` y convierte a un `Set<Marker>`
   }
 
   Widget _onDrawer(BuildContext context) {
