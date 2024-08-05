@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:pin_logy/components/logout_Dialog.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
@@ -10,6 +11,7 @@ import 'package:pin_logy/services/auth/admin/admin_auth_provider.dart';
 import 'package:pin_logy/views/admin/pages/addUser_page.dart';
 import 'package:pin_logy/views/admin/pages/userList_page.dart';
 import 'package:pin_logy/views/admin/pages/locationHistory_page.dart';
+import 'dart:math';
 
 class AdminMainpage extends StatefulWidget {
   const AdminMainpage({super.key});
@@ -25,13 +27,17 @@ class _AdminMainpageState extends State<AdminMainpage> {
   String _userRole = '';
   final AdminAuthProvider _authProvider = AdminAuthProvider();
 
+  List<Map<String, dynamic>> _randomUsersWithLocations = [];
+  bool _isLoading = true;
+
   DateTime? _lastPressedTime;
-  static const int _doublePressInterval = 2; // Intervalo en segundos
+  static const int _doublePressInterval = 2;
 
   @override
   void initState() {
     super.initState();
     _getUserData();
+    _getRandomUsersWithLocations();
   }
 
   Future<void> _getUserData() async {
@@ -56,6 +62,54 @@ class _AdminMainpageState extends State<AdminMainpage> {
     } catch (e) {
       if (kDebugMode) {
         print('Error al obtener datos del usuario: $e');
+      }
+    }
+  }
+
+  Future<void> _getRandomUsersWithLocations() async {
+    try {
+      final usersSnapshot =
+          await FirebaseFirestore.instance.collection('Users').get();
+      if (usersSnapshot.docs.isNotEmpty) {
+        final selectedUsers = (usersSnapshot.docs..shuffle()).take(3).toList();
+        List<Map<String, dynamic>> usersWithLocations = [];
+
+        for (var userDoc in selectedUsers) {
+          var user = userDoc.data();
+          var userId = userDoc.id;
+          var locationsSnapshot = await FirebaseFirestore.instance
+              .collection('UserLocations')
+              .doc(userId)
+              .get();
+
+          var locations = locationsSnapshot.data();
+          if (locations != null) {
+            usersWithLocations.add({
+              'name': user['nombre'],
+              'lastName': user['apellido'],
+              'locations': locations,
+            });
+          } else {
+            print('No se encontraron ubicaciones para el usuario $userId');
+          }
+        }
+
+        setState(() {
+          _randomUsersWithLocations = usersWithLocations;
+          _isLoading = false;
+        });
+      } else {
+        print('No se encontraron usuarios en la colección Users.');
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error al obtener ubicaciones de usuarios: $e');
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -104,7 +158,9 @@ class _AdminMainpageState extends State<AdminMainpage> {
           backgroundColor: Theme.of(context).primaryColor,
         ),
         drawer: _onDrawer(context),
-        body: const Center(child: Text("Hello")),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _buildRandomUserMaps(),
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -148,6 +204,67 @@ class _AdminMainpageState extends State<AdminMainpage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildRandomUserMaps() {
+    if (_randomUsersWithLocations.isEmpty) {
+      return const Center(
+          child: Text('No se encontraron usuarios con ubicaciones.'));
+    }
+
+    return ListView.builder(
+      itemCount: _randomUsersWithLocations.length,
+      itemBuilder: (context, index) {
+        var user = _randomUsersWithLocations[index];
+        var name = user['name'];
+        var lastName = user['lastName'];
+        var locations = user['locations'];
+
+        return Card(
+          margin: const EdgeInsets.all(8.0),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '$name $lastName',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 16.0),
+                SizedBox(
+                  height: 200,
+                  width: double.infinity,
+                  child: GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(
+                        locations['latitude'] ?? 0.0,
+                        locations['longitude'] ?? 0.0,
+                      ),
+                      zoom: 12,
+                    ),
+                    markers: Set<Marker>.of(
+                      locations.entries.map(
+                        (entry) {
+                          var loc = entry.value;
+                          return Marker(
+                            markerId: MarkerId(entry.key),
+                            position: LatLng(
+                              loc['latitude'] ?? 0.0,
+                              loc['longitude'] ?? 0.0,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
