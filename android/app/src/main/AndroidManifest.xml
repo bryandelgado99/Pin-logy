@@ -14,19 +14,15 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
-
-        <!-- Required to query activities that can process text -->
-        <queries>
-            <intent>
+            <intent-filter>
                 <action android:name="android.intent.action.SENDTO" />
                 <data android:scheme="mailto" />
-            </intent>
-            <intent>
+            </intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.PROCESS_TEXT" />
                 <data android:mimeType="text/plain" />
-            </intent>
-        </queries>
+            </intent-filter>
+        </activity>
     </application>
 
     <!-- Don't delete the meta-data below. This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
