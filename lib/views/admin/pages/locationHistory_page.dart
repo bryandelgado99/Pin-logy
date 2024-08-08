@@ -15,32 +15,6 @@ class _LocationHistoryPageState extends State<LocationHistoryPage> {
   @override
   void initState() {
     super.initState();
-    _getTerrains();
-  }
-
-// Obtener la froma del terreno
-  Future<void> _getTerrains() async {
-    FirebaseFirestore.instance
-        .collection('terrains')
-        .snapshots()
-        .listen((snapshot) {
-      Set<Polygon> newPolygons = {};
-      for (var doc in snapshot.docs) {
-        List<LatLng> points = [];
-        for (var point in doc['points']) {
-          points.add(LatLng(point.latitude, point.longitude));
-        }
-        newPolygons.add(
-          Polygon(
-            polygonId: PolygonId(doc.id),
-            points: points,
-            strokeWidth: 2,
-            fillColor: Colors.green.withOpacity(0.5),
-          ),
-        );
-      }
-      setState(() {});
-    });
   }
 
   @override
@@ -80,7 +54,8 @@ class _LocationHistoryPageState extends State<LocationHistoryPage> {
                       });
                     },
                   ),
-                  if (_selectedUserId == userId) _buildUserCard(userId),
+                  if (_selectedUserId == userId)
+                    UserLocationMap(userId: userId),
                 ],
               );
             },
@@ -89,8 +64,15 @@ class _LocationHistoryPageState extends State<LocationHistoryPage> {
       ),
     );
   }
+}
 
-  Widget _buildUserCard(String userId) {
+class UserLocationMap extends StatelessWidget {
+  final String userId;
+
+  const UserLocationMap({super.key, required this.userId});
+
+  @override
+  Widget build(BuildContext context) {
     return FutureBuilder<DocumentSnapshot>(
       future: FirebaseFirestore.instance
           .collection('UserLocations')
@@ -102,7 +84,6 @@ class _LocationHistoryPageState extends State<LocationHistoryPage> {
         }
 
         if (snapshot.hasError) {
-          print('Error fetching user location data: ${snapshot.error}');
           return const Card(
             margin: EdgeInsets.all(8.0),
             child: Padding(
@@ -113,7 +94,6 @@ class _LocationHistoryPageState extends State<LocationHistoryPage> {
         }
 
         if (!snapshot.hasData || snapshot.data!.data() == null) {
-          print('No data found for user ID: $userId');
           return const Card(
             margin: EdgeInsets.all(8.0),
             child: Padding(
@@ -123,48 +103,23 @@ class _LocationHistoryPageState extends State<LocationHistoryPage> {
           );
         }
 
-        var data = snapshot.data!.data() as Map<String, dynamic>?;
-
-        print('Data fetched for user ID: $userId: $data'); // Depuración
-
-        if (data == null ||
-            !data.containsKey('locations') ||
-            (data['locations'] as List).isEmpty) {
-          print('No location data for user ID: $userId');
-          return const Card(
-            margin: EdgeInsets.all(8.0),
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text('Sin historial reciente'),
-            ),
-          );
-        }
-
+        var data = snapshot.data!.data() as Map<String, dynamic>;
         var locationList =
             (data['locations'] as List<dynamic>).cast<Map<String, dynamic>>();
-        print('Locations list: $locationList'); // Depuración
-
-        List<Marker> markers = locationList.map((location) {
+        List<LatLng> points = locationList.map((location) {
           var lat = (location['latitude'] as num?)?.toDouble() ?? 0.0;
           var lng = (location['longitude'] as num?)?.toDouble() ?? 0.0;
-          return Marker(
-            markerId: MarkerId(location['id'] ?? 'unknown'),
-            position: LatLng(lat, lng),
-            infoWindow: InfoWindow(title: location['name'] ?? 'No Name'),
-          );
+          return LatLng(lat, lng);
         }).toList();
 
-        print('Markers: $markers'); // Depuración
-
-        if (markers.isEmpty) {
-          return const Card(
-            margin: EdgeInsets.all(8.0),
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text('Sin historial reciente'),
-            ),
-          );
-        }
+        Set<Polygon> polygons = {
+          Polygon(
+            polygonId: const PolygonId('user_area'),
+            points: points,
+            strokeWidth: 2,
+            fillColor: Colors.green.withOpacity(0.5),
+          ),
+        };
 
         return Card(
           margin: const EdgeInsets.all(8.0),
@@ -183,17 +138,12 @@ class _LocationHistoryPageState extends State<LocationHistoryPage> {
                   width: double.infinity,
                   child: GoogleMap(
                     initialCameraPosition: CameraPosition(
-                      target: LatLng(
-                        markers.isNotEmpty
-                            ? markers.first.position.latitude
-                            : 0.0,
-                        markers.isNotEmpty
-                            ? markers.first.position.longitude
-                            : 0.0,
-                      ),
+                      target: points.isNotEmpty
+                          ? points.first
+                          : const LatLng(0.0, 0.0),
                       zoom: 12,
                     ),
-                    markers: Set<Marker>.of(markers),
+                    polygons: polygons,
                   ),
                 ),
               ],
