@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserAuthProvider {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -17,11 +18,10 @@ class UserAuthProvider {
     try {
       // Buscar el documento del administrador en Firestore usando el UID del administrador
       DocumentSnapshot adminDoc =
-          await _firestore.collection('Admins').doc(currentUser.uid).get();
+      await _firestore.collection('Admins').doc(currentUser.uid).get();
 
       if (adminDoc.exists) {
-        return adminDoc
-            .id; // Devuelve el ID del documento, que corresponde al adminId
+        return adminDoc.id; // Devuelve el ID del documento, que corresponde al adminId
       } else {
         return null; // El documento no existe
       }
@@ -40,14 +40,14 @@ class UserAuthProvider {
     final rnd = Random.secure();
     return String.fromCharCodes(Iterable.generate(
       length,
-      (_) => chars.codeUnitAt(rnd.nextInt(chars.length)),
+          (_) => chars.codeUnitAt(rnd.nextInt(chars.length)),
     ));
   }
 
   Future<void> _sendEmail(String toEmail, String password) async {
     final Email email = Email(
       body:
-          'Hola Usuario/a,\n\nTu cuenta ha sido creada con éxito. Aquí están tus credenciales:\n\n'
+      'Hola Usuario/a,\n\nTu cuenta ha sido creada con éxito. Aquí están tus credenciales:\n\n'
           'Correo electrónico: $toEmail\n'
           'Contraseña: $password\n\n'
           'Por favor, cambia tu contraseña después de iniciar sesión.',
@@ -79,7 +79,7 @@ class UserAuthProvider {
     try {
       // Crear el usuario en Firebase Auth
       UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
+      await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -112,6 +112,12 @@ class UserAuthProvider {
     try {
       UserCredential userCredential =
       await _auth.signInWithEmailAndPassword(email: email, password: password);
+
+      // Guardar los datos en SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('admin_email', email);
+      await prefs.setString('admin_password', password);
+
       return userCredential.user;
     } catch (e) {
       if (kDebugMode) {
@@ -125,6 +131,12 @@ class UserAuthProvider {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
+
+      // Limpiar los datos de SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.remove('admin_email');
+      await prefs.remove('admin_password');
+
       if (kDebugMode) {
         print('Usuario cerrado sesión correctamente.');
       }
@@ -136,4 +148,16 @@ class UserAuthProvider {
     }
   }
 
+  // Función para obtener el administrador autenticado desde SharedPreferences
+  Future<User?> getPersistedAdmin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? email = prefs.getString('admin_email');
+    String? password = prefs.getString('admin_password');
+
+    if (email != null && password != null) {
+      return signInWithEmailAndPassword(email: email, password: password);
+    } else {
+      return null;
+    }
+  }
 }

@@ -174,10 +174,7 @@ class _LoginAdminState extends State<LoginAdmin> {
                     );
 
                     try {
-                      final user = await _authProvider.loginAdmin(
-                        correo: _mailController.text,
-                        password: _passController.text,
-                      );
+                      final user = await _authProvider.loginAdmin(correo: _mailController.text, password: _passController.text);
 
                       if (user != null) {
                         // Si el inicio de sesión es exitoso, navegar a la pantalla principal

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminAuthProvider {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -43,6 +44,7 @@ class AdminAuthProvider {
     }
   }
 
+  // Función para iniciar sesión del administrador con persistencia de datos
   Future<User?> loginAdmin({
     required String correo,
     required String password,
@@ -59,9 +61,14 @@ class AdminAuthProvider {
       if (user != null) {
         // Obtener los datos del administrador desde Firestore
         final adminDoc =
-            await _firestore.collection('Admins').doc(user.uid).get();
+        await _firestore.collection('Admins').doc(user.uid).get();
 
         if (adminDoc.exists) {
+          // Guardar los datos en SharedPreferences
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('admin_email', correo);
+          await prefs.setString('admin_password', password);
+
           return user; // Contraseña correcta, autenticada por Firebase Auth
         } else {
           if (kDebugMode) {
@@ -80,6 +87,19 @@ class AdminAuthProvider {
         print('Error al iniciar sesión: $e');
       }
       rethrow;
+    }
+  }
+
+  // Función para obtener el administrador autenticado desde SharedPreferences
+  Future<User?> getPersistedAdmin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? email = prefs.getString('admin_email');
+    String? password = prefs.getString('admin_password');
+
+    if (email != null && password != null) {
+      return loginAdmin(correo: email, password: password);
+    } else {
+      return null;
     }
   }
 
