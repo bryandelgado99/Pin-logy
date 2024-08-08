@@ -120,4 +120,20 @@ class UserAuthProvider {
       rethrow;
     }
   }
+
+  // Función para cerrar sesión con correo
+  Future<void> signOut() async {
+    try {
+      await _auth.signOut();
+      if (kDebugMode) {
+        print('Usuario cerrado sesión correctamente.');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error al cerrar sesión: $e');
+      }
+      rethrow;
+    }
+  }
+
 }

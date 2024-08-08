@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pin_logy/services/auth/user/user_auth_provider.dart';
 
 class UserDashboard extends StatefulWidget {
   const UserDashboard({super.key});
@@ -8,10 +9,14 @@ class UserDashboard extends StatefulWidget {
 }
 
 class _UserDashboardState extends State<UserDashboard> {
+
+  final UserAuthProvider _authProvider = UserAuthProvider();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: null,
         title: Row(
           children: [
             Icon(
@@ -27,6 +32,14 @@ class _UserDashboardState extends State<UserDashboard> {
           ],
         ),
         backgroundColor: Theme.of(context).primaryColor,
+        actions: [
+          IconButton(
+              onPressed: (){
+                _authProvider.signOut();
+              },
+              icon: const Icon(Icons.logout_rounded)
+          )
+        ],
       ),
       body: const Center(
         child: Text("Hello"),
