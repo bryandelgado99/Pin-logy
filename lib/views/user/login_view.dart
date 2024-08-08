@@ -3,7 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
 import 'package:pin_logy/design/theme.dart';
+import 'package:pin_logy/services/auth/user/user_auth_provider.dart';
+import 'package:pin_logy/views/user/user_dashboard.dart';
 import 'package:toastification/toastification.dart';
+
+import '../partials/onLoadingBoard.dart';
 
 class LoginUserView extends StatefulWidget {
   const LoginUserView({super.key});
@@ -17,6 +21,7 @@ class _LoginUserViewState extends State<LoginUserView> {
   final TextEditingController _mailController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
   bool _obscureText = true;
+  final UserAuthProvider _authProvider = UserAuthProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -179,39 +184,62 @@ class _LoginUserViewState extends State<LoginUserView> {
             height: 18,
           ),
           FilledButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
+            onPressed: () async {
+              if (_formKey.currentState!.validate()) {
+                // Mostrar pantalla de carga
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const LoadingScreen()),
+                );
+
+                try {
+                  final user = await _authProvider.signInWithEmailAndPassword(
+                    email: _mailController.text,
+                    password: _passController.text,
+                  );
+
+                  if (user != null) {
+                    // Si el inicio de sesión es exitoso, navegar a la pantalla principal
+                    Navigator.of(context)
+                        .pop(); // Regresar de la pantalla de carga
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                          builder: (context) => const UserDashboard()),
+                    );
+                  } else {
+                    // Mostrar mensaje de error y regresar a la pantalla de inicio de sesión
+                    Navigator.of(context)
+                        .pop(); // Regresar de la pantalla de carga
+                    toastification.show(
+                      context: context,
+                      type: ToastificationType.error,
+                      style: ToastificationStyle.flat,
+                      title: const Text("Error al iniciar sesión"),
+                      description:
+                      const Text("Correo y/o contraseña incorrectos"),
+                      alignment: Alignment.topCenter,
+                      autoCloseDuration: const Duration(seconds: 8),
+                    );
+                  }
+                } catch (e) {
+                  // Manejar excepciones y mostrar mensaje de error
+                  Navigator.of(context)
+                      .pop(); // Regresar de la pantalla de carga
                   toastification.show(
                     context: context,
-                    type: ToastificationType.info,
-                    style: ToastificationStyle.flatColored,
-                    title: const Text("Iniciando sesión..."),
-                    description: const Text("Por favor, espere"),
-                    alignment: Alignment.topRight,
-                    autoCloseDuration: const Duration(
-                      milliseconds: 5000,
-                    ),
-                    animationBuilder: (
-                      context,
-                      animation,
-                      alignment,
-                      child,
-                    ) {
-                      return ScaleTransition(
-                        scale: animation,
-                        child: child,
-                      );
-                    },
-                    icon: CircularProgressIndicator(color: theme.primaryColor),
-                    borderRadius: BorderRadius.circular(12.0),
-                    boxShadow: lowModeShadow,
-                    showProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: false,
+                    type: ToastificationType.error,
+                    style: ToastificationStyle.flat,
+                    title: const Text("Error al iniciar sesión"),
+                    description:
+                    const Text("Correo y/o contraseña incorrectos"),
+                    alignment: Alignment.topCenter,
+                    autoCloseDuration: const Duration(seconds: 8),
                   );
                 }
-              },
-              child: const Text("Ingresar"))
+              }
+            },
+            child: const Text("Ingresar"),
+          ),
         ],
       ),
     );

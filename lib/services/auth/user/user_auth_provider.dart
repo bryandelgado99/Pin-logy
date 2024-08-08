@@ -103,4 +103,21 @@ class UserAuthProvider {
       rethrow;
     }
   }
+
+  // Función para iniciar sesión con correo y contraseña
+  Future<User?> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      UserCredential userCredential =
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      return userCredential.user;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error al iniciar sesión: $e');
+      }
+      rethrow;
+    }
+  }
 }
