@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class LocationHistoryPage extends StatefulWidget {
   const LocationHistoryPage({super.key});
@@ -11,10 +12,22 @@ class LocationHistoryPage extends StatefulWidget {
 
 class _LocationHistoryPageState extends State<LocationHistoryPage> {
   String? _selectedUserId;
+  bool _locationPermissionGranted = false;
+
+  void _requestLocationPermission() async {
+    var status = await Permission.locationWhenInUse.status;
+    if (!status.isGranted) {
+      status = await Permission.locationWhenInUse.request();
+    }
+    setState(() {
+      _locationPermissionGranted = status.isGranted;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    _requestLocationPermission();
   }
 
   @override
@@ -49,13 +62,11 @@ class _LocationHistoryPageState extends State<LocationHistoryPage> {
                     subtitle: Text(userEmail),
                     onTap: () {
                       setState(() {
-                        _selectedUserId =
-                            _selectedUserId == userId ? null : userId;
+                        _selectedUserId = _selectedUserId == userId ? null : userId;
                       });
                     },
                   ),
-                  if (_selectedUserId == userId)
-                    UserLocationMap(userId: userId),
+                  if (_selectedUserId == userId) UserLocationMap(userId: userId, locationPermissionGranted: _locationPermissionGranted),
                 ],
               );
             },
@@ -68,16 +79,17 @@ class _LocationHistoryPageState extends State<LocationHistoryPage> {
 
 class UserLocationMap extends StatelessWidget {
   final String userId;
+  final bool locationPermissionGranted;
 
-  const UserLocationMap({super.key, required this.userId});
+  const UserLocationMap({
+    required this.userId,
+    required this.locationPermissionGranted,
+  });
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance
-          .collection('UserLocations')
-          .doc(userId)
-          .get(),
+      future: FirebaseFirestore.instance.collection('UserLocations').doc(userId).get(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -103,9 +115,30 @@ class UserLocationMap extends StatelessWidget {
           );
         }
 
-        var data = snapshot.data!.data() as Map<String, dynamic>;
-        var locationList =
-            (data['locations'] as List<dynamic>).cast<Map<String, dynamic>>();
+        var data = snapshot.data!.data() as Map<String, dynamic>?;
+
+        if (data == null || !data.containsKey('locations') || data['locations'] == null) {
+          return const Card(
+            margin: EdgeInsets.all(8.0),
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text('Sin historial reciente'),
+            ),
+          );
+        }
+
+        var locationList = (data['locations'] as List<dynamic>).cast<Map<String, dynamic>>();
+
+        if (locationList.length < 3) {
+          return const Card(
+            margin: EdgeInsets.all(8.0),
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text('No hay suficientes ubicaciones para crear un polígono.'),
+            ),
+          );
+        }
+
         List<LatLng> points = locationList.map((location) {
           var lat = (location['latitude'] as num?)?.toDouble() ?? 0.0;
           var lng = (location['longitude'] as num?)?.toDouble() ?? 0.0;
@@ -138,11 +171,10 @@ class UserLocationMap extends StatelessWidget {
                   width: double.infinity,
                   child: GoogleMap(
                     initialCameraPosition: CameraPosition(
-                      target: points.isNotEmpty
-                          ? points.first
-                          : const LatLng(0.0, 0.0),
+                      target: points.isNotEmpty ? points.first : const LatLng(0.0, 0.0),
                       zoom: 12,
                     ),
+                    myLocationEnabled: locationPermissionGranted,
                     polygons: polygons,
                   ),
                 ),
