@@ -1,9 +1,10 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, library_private_types_in_public_api
 import 'dart:ui';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pin_logy/components/theme_switcher.dart';
-import 'package:pin_logy/design/theme.dart';
+import 'package:pin_logy/views/user/pages/home_screen.dart';
 import 'package:toastification/toastification.dart';
+ 
 
 class LoginUserView extends StatefulWidget {
   const LoginUserView({super.key});
@@ -20,8 +21,6 @@ class _LoginUserViewState extends State<LoginUserView> {
 
   @override
   Widget build(BuildContext context) {
-    var lightTheme = Themes.lightTheme;
-    var darkTheme = Themes.darkTheme;
     var theme = Theme.of(context);
 
     final bottomInsets = MediaQuery.of(context).viewInsets.bottom;
@@ -34,7 +33,7 @@ class _LoginUserViewState extends State<LoginUserView> {
           children: [
             const Icon(
               Icons.supervised_user_circle_rounded,
-              size:25,
+              size: 25,
             ),
             const SizedBox(width: 12),
             Text(
@@ -44,14 +43,14 @@ class _LoginUserViewState extends State<LoginUserView> {
           ],
         ),
         actions: [
-          CustomThemeSwitcher(lightTheme: lightTheme, darkTheme: darkTheme)
+          // CustomThemeSwitcher(lightTheme: lightTheme, darkTheme: darkTheme) // Descomenta si tienes el widget de cambio de tema
         ],
       ),
       body: Stack(
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/resource_abstract.png', // Cambia esto a la ruta de tu imagen de fondo
+              'assets/resource_abstract.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -179,37 +178,54 @@ class _LoginUserViewState extends State<LoginUserView> {
             height: 18,
           ),
           FilledButton(
-              onPressed: () {
+              onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  toastification.show(
-                    context: context,
-                    type: ToastificationType.info,
-                    style: ToastificationStyle.flatColored,
-                    title: const Text("Iniciando sesión..."),
-                    description: const Text("Por favor, espere"),
-                    alignment: Alignment.topRight,
-                    autoCloseDuration: const Duration(
-                      milliseconds: 5000,
-                    ),
-                    animationBuilder: (
+                  try {
+                    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                      email: _mailController.text,
+                      password: _passController.text,
+                    );
+                    Navigator.pushReplacement(
                       context,
-                      animation,
-                      alignment,
-                      child,
-                    ) {
-                      return ScaleTransition(
-                        scale: animation,
-                        child: child,
-                      );
-                    },
-                    icon: CircularProgressIndicator(color: theme.primaryColor),
-                    borderRadius: BorderRadius.circular(12.0),
-                    boxShadow: lowModeShadow,
-                    showProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: false,
-                  );
-                } 
+                      MaterialPageRoute(builder: (context) => HomeScreen()),
+                    );
+                  } catch (e) {
+                    toastification.show(
+                      context: context,
+                      type: ToastificationType.error,
+                      style: ToastificationStyle.flatColored,
+                      title: const Text("Error al iniciar sesión"),
+                      description: Text(e.toString()),
+                      alignment: Alignment.topRight,
+                      autoCloseDuration: const Duration(
+                        milliseconds: 5000,
+                      ),
+                      animationBuilder: (
+                        context,
+                        animation,
+                        alignment,
+                        child,
+                      ) {
+                        return ScaleTransition(
+                          scale: animation,
+                          child: child,
+                        );
+                      },
+                      icon: Icon(Icons.error, color: Theme.of(context).colorScheme.error),
+                      borderRadius: BorderRadius.circular(12.0),
+                      boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      showProgressBar: false,
+                      closeOnClick: false,
+                      pauseOnHover: false,
+                    );
+                  }
+                }
               },
               child: const Text("Ingresar"))
         ],

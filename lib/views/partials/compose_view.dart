@@ -7,7 +7,7 @@ import 'package:pin_logy/constants/device_constrains.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
 import 'package:pin_logy/design/theme.dart';
 import 'package:pin_logy/views/admin/login_admin.dart';
-import 'package:pin_logy/views/user/login_view.dart';
+import 'package:pin_logy/views/user/pages/login_view.dart';
 
 class ComposeView extends StatefulWidget {
   const ComposeView({super.key});
