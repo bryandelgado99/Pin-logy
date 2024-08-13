@@ -50,6 +50,7 @@ dependencies:
   permission_handler: ^10.2.0
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
+  provider: ^6.1.2
 
 dependency_overrides:
   flutter_map:

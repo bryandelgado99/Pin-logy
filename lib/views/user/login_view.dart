@@ -193,18 +193,17 @@ class _LoginUserViewState extends State<LoginUserView> {
                 );
 
                 try {
-                  final user = await _authProvider.signInWithEmailAndPassword(
-                    email: _mailController.text,
-                    password: _passController.text,
+                  String? uid = await _authProvider.signInWithEmailAndPassword(
+                      email: _mailController.text,
+                      password: _passController.text
                   );
 
-                  if (user != null) {
-                    // Si el inicio de sesión es exitoso, navegar a la pantalla principal
-                    Navigator.of(context)
-                        .pop(); // Regresar de la pantalla de carga
-                    Navigator.of(context).pushReplacement(
+                  if (uid != null) {
+                    Navigator.pushReplacement(
+                      context,
                       MaterialPageRoute(
-                          builder: (context) => const UserDashboard()),
+                        builder: (context) => UserDashboard(userId: uid),
+                      ),
                     );
                   } else {
                     // Mostrar mensaje de error y regresar a la pantalla de inicio de sesión

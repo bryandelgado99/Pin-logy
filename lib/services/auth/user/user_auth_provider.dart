@@ -105,20 +105,23 @@ class UserAuthProvider {
   }
 
   // Función para iniciar sesión con correo y contraseña
-  Future<User?> signInWithEmailAndPassword({
+  Future<String?> signInWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
     try {
-      UserCredential userCredential =
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
       // Guardar los datos en SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('admin_email', email);
       await prefs.setString('admin_password', password);
 
-      return userCredential.user;
+      // Retorna el UID del usuario autenticado
+      return userCredential.user?.uid;
     } catch (e) {
       if (kDebugMode) {
         print('Error al iniciar sesión: $e');
@@ -149,7 +152,7 @@ class UserAuthProvider {
   }
 
   // Función para obtener el administrador autenticado desde SharedPreferences
-  Future<User?> getPersistedAdmin() async {
+  Future<Future<String?>?> getPersistedAdmin() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? email = prefs.getString('admin_email');
     String? password = prefs.getString('admin_password');
