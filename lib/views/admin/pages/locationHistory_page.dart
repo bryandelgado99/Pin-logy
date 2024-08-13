@@ -81,7 +81,7 @@ class UserLocationMap extends StatelessWidget {
   final String userId;
   final bool locationPermissionGranted;
 
-  const UserLocationMap({
+  const UserLocationMap({super.key,
     required this.userId,
     required this.locationPermissionGranted,
   });

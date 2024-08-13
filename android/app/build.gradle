@@ -72,3 +72,7 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies{
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+}
