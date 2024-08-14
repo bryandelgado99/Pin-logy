@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pin_logy/views/partials/maps/map_controller.dart';
 
 class LocationHistoryPage extends StatefulWidget {
   const LocationHistoryPage({super.key});
@@ -88,6 +89,9 @@ class UserLocationMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final MapController mapController = MapController();
+
     return FutureBuilder<DocumentSnapshot>(
       future: FirebaseFirestore.instance.collection('UserLocations').doc(userId).get(),
       builder: (context, snapshot) {
@@ -170,11 +174,9 @@ class UserLocationMap extends StatelessWidget {
                   height: 200,
                   width: double.infinity,
                   child: GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: points.isNotEmpty ? points.first : const LatLng(0.0, 0.0),
-                      zoom: 12,
-                    ),
+                    initialCameraPosition: mapController.initialPosition,
                     myLocationEnabled: locationPermissionGranted,
+                    zoomControlsEnabled: false,
                     polygons: polygons,
                   ),
                 ),

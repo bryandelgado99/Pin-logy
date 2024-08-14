@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
 import 'package:pin_logy/services/auth/user/user_auth_provider.dart';
-import 'package:pin_logy/views/partials/compose_view.dart';
+import 'package:pin_logy/services/requests/request_page.dart';
 import 'package:pin_logy/views/partials/maps/map_view.dart';
 
 class UserDashboard extends StatefulWidget {
@@ -139,7 +139,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     _authProvider.signOut();
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => const ComposeView()),
+                      MaterialPageRoute(builder: (context) => RequestPage(userId: widget.userId)),
                           (Route<dynamic> route) => false, // Esto asegura que todas las rutas anteriores se eliminen
                     );
                   },

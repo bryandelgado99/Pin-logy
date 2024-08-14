@@ -1,12 +1,15 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers, library_private_types_in_public_api
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
 import 'package:pin_logy/design/theme.dart';
 import 'package:pin_logy/services/auth/user/user_auth_provider.dart';
+import 'package:pin_logy/services/requests/request_page.dart';
 import 'package:pin_logy/views/user/user_dashboard.dart';
 import 'package:toastification/toastification.dart';
 
+import '../../services/requests/request_controller.dart';
 import '../partials/onLoadingBoard.dart';
 
 class LoginUserView extends StatefulWidget {
@@ -22,6 +25,7 @@ class _LoginUserViewState extends State<LoginUserView> {
   final TextEditingController _passController = TextEditingController();
   bool _obscureText = true;
   final UserAuthProvider _authProvider = UserAuthProvider();
+  final _controller = RequestPermissionController(Permission.locationWhenInUse);
 
   @override
   Widget build(BuildContext context) {
@@ -194,17 +198,31 @@ class _LoginUserViewState extends State<LoginUserView> {
 
                 try {
                   String? uid = await _authProvider.signInWithEmailAndPassword(
-                      email: _mailController.text,
-                      password: _passController.text
+                    email: _mailController.text,
+                    password: _passController.text,
                   );
 
                   if (uid != null) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserDashboard(userId: uid),
-                      ),
-                    );
+                    // Verificar el estado del permiso
+                    final permissionStatus = await Permission.locationWhenInUse.status;
+
+                    if (permissionStatus == PermissionStatus.granted) {
+                      // Si el permiso está concedido, navegar directamente al UserDashboard
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserDashboard(userId: uid),
+                        ),
+                      );
+                    } else {
+                      // Si el permiso no está concedido, navegar a RequestPage
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RequestPage(userId: uid),
+                        ),
+                      );
+                    }
                   } else {
                     // Mostrar mensaje de error y regresar a la pantalla de inicio de sesión
                     Navigator.of(context)

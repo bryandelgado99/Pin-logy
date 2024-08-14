@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -11,6 +13,7 @@ import 'package:pin_logy/services/auth/admin/admin_auth_provider.dart';
 import 'package:pin_logy/views/admin/pages/addUser_page.dart';
 import 'package:pin_logy/views/admin/pages/userList_page.dart';
 import 'package:pin_logy/views/admin/pages/locationHistory_page.dart';
+import 'package:pin_logy/views/partials/maps/map_controller.dart';
 
 class AdminMainpage extends StatefulWidget {
   const AdminMainpage({super.key});
@@ -25,12 +28,17 @@ class _AdminMainpageState extends State<AdminMainpage> {
   String _userLastName = '';
   String _userRole = '';
   final AdminAuthProvider _authProvider = AdminAuthProvider();
+  final MapController mapController = MapController();
+  final Completer<GoogleMapController> _controller = Completer();
 
   List<Map<String, dynamic>> _usersWithLocations = [];
   bool _isLoading = true;
 
   DateTime? _lastPressedTime;
   static const int _doublePressInterval = 2; // Intervalo en segundos
+
+  double latitude = 452.00;
+  double longitud = 255.12;
 
   @override
   void initState() {
@@ -63,6 +71,14 @@ class _AdminMainpageState extends State<AdminMainpage> {
         print('Error al obtener datos del usuario: $e');
       }
     }
+  }
+
+  // Función para mover la cámara a la posición actual
+  Future<void> _goToMyPosition() async {
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(
+      mapController.onRealTimePosition(latitude, longitud),
+    ));
   }
 
   Future<void> _getUsersWithLocations() async {
@@ -219,6 +235,7 @@ class _AdminMainpageState extends State<AdminMainpage> {
         var lastName = user['lastName'];
         var locations = user['locations'] as Map<String, dynamic>;
 
+
         return Card(
           margin: const EdgeInsets.all(8.0),
           child: Padding(
@@ -235,17 +252,13 @@ class _AdminMainpageState extends State<AdminMainpage> {
                   height: 200,
                   width: double.infinity,
                   child: GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: LatLng(
-                        locations['latitude']?.toDouble() ?? 0.0,
-                        locations['longitude']?.toDouble() ?? 0.0,
-                      ),
-                      zoom: 12,
-                    ),
-                    markers: _buildMarkers(locations),
+                    initialCameraPosition: mapController.onRealTimePosition(latitude, longitud),
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+                    },
                   ),
                 ),
-              ],
+              ]
             ),
           ),
         );

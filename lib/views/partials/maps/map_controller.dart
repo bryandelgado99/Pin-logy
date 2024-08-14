@@ -17,6 +17,14 @@ class MapController extends ChangeNotifier{
     controller.setMapStyle(mapData);
   }
 
+  //Función para obtener mi posición actual
+ CameraPosition onRealTimePosition(double lat, double long){
+    return CameraPosition(
+        target: LatLng(lat, long),
+        zoom: 13
+    );
+  }
+
   //Agregar marcador
   void onTap(LatLng position){
     final markerId = MarkerId(_markers.length.toString());
