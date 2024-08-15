@@ -2,7 +2,9 @@ import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_logy/design/theme.dart';
+import 'package:pin_logy/views/partials/maps/map_controller.dart';
 import 'package:pin_logy/views/partials/splash.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -11,8 +13,15 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
-}
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => MapController()),
+        ],
+        child: const MyApp(),
+      ),
+    );
+  }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

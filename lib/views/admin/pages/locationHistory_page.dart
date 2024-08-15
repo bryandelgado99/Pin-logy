@@ -174,7 +174,7 @@ class UserLocationMap extends StatelessWidget {
                   height: 200,
                   width: double.infinity,
                   child: GoogleMap(
-                    initialCameraPosition: mapController.initialPosition,
+                    initialCameraPosition: mapController.initialCameraPosition,
                     myLocationEnabled: locationPermissionGranted,
                     zoomControlsEnabled: false,
                     polygons: polygons,

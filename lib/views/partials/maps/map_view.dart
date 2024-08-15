@@ -9,21 +9,71 @@ class MapView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<MapController>(
-      create: (context) => MapController(),
+      create: (_) => MapController(),
       child: Scaffold(
-        body: Consumer<MapController>(
-            builder: (_, controller, __) => GoogleMap(
-              initialCameraPosition: controller.initialPosition,
-              onMapCreated: controller.onMapCreated,
-              zoomControlsEnabled: false,
-              compassEnabled: false,
-              rotateGesturesEnabled: false,
-              markers: controller.markers,
-              onTap: controller.onTap,
-            ),
+        body: Selector<MapController, bool>(
+          selector: (_, controller) => controller.loading,
+          builder: (context, loading, progressIndicator) {
+            if (loading) {
+              return progressIndicator!;
+            }
+            return Consumer<MapController>(
+              builder: (context, controller, __) {
+                if (!controller.gpsEnabled) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          icon: const Icon(Icons.crisis_alert_rounded),
+                          title: const Text("Acceso al GPS"),
+                          content: Text(
+                            "Para poder usar la aplicación, activa el GPS y obtener tu posición en tiempo real",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            textAlign: TextAlign.justify,
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                controller.enableGPS();
+                                Navigator.pop(context); // Cierra el diálogo después de activar el GPS
+                              },
+                              child: const Text("Activar"),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text("Cancelar"),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  });
+                }
+
+                final CameraPosition initialCameraPosition = controller.initialCameraPosition;
+
+                return GoogleMap(
+                  initialCameraPosition: initialCameraPosition,
+                  onMapCreated: controller.onMapCreated,
+                  zoomControlsEnabled: false,
+                  compassEnabled: false,
+                  rotateGesturesEnabled: false,
+                  markers: controller.markers,
+                  onTap: controller.onTap,
+                  myLocationButtonEnabled: true,
+                  myLocationEnabled: true,
+                );
+              },
+            );
+          },
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
         ),
       ),
     );
   }
 }
-

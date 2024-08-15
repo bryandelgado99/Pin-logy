@@ -77,7 +77,7 @@ class _AdminMainpageState extends State<AdminMainpage> {
   Future<void> _goToMyPosition() async {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(
-      mapController.onRealTimePosition(latitude, longitud),
+      mapController.initialCameraPosition
     ));
   }
 
@@ -252,9 +252,11 @@ class _AdminMainpageState extends State<AdminMainpage> {
                   height: 200,
                   width: double.infinity,
                   child: GoogleMap(
-                    initialCameraPosition: mapController.onRealTimePosition(latitude, longitud),
+                    initialCameraPosition: mapController.initialCameraPosition,
                     onMapCreated: (GoogleMapController controller) {
-                      _controller.complete(controller);
+                      if (!_controller.isCompleted) {
+                        _controller.complete(controller);
+                      }
                     },
                   ),
                 ),

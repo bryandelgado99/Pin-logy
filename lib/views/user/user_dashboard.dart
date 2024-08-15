@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
 import 'package:pin_logy/services/auth/user/user_auth_provider.dart';
 import 'package:pin_logy/services/requests/request_page.dart';
+import 'package:pin_logy/views/partials/maps/map_controller.dart';
 import 'package:pin_logy/views/partials/maps/map_view.dart';
+import 'package:provider/provider.dart';
 
 class UserDashboard extends StatefulWidget {
   final String userId; // Añadir el uid como parámetro
@@ -20,9 +22,6 @@ class _UserDashboardState extends State<UserDashboard> {
   String _userName = '';
   String _userLastName = '';
   String _userRole = '';
-  double latitude = 25.0;
-  double longitude = 50.0;
-  double poligon_area = 250.0;
 
   final UserAuthProvider _authProvider = UserAuthProvider();
 
@@ -52,9 +51,6 @@ class _UserDashboardState extends State<UserDashboard> {
             _userName = userData['name'] ?? 'Sin nombre';
             _userLastName = userData['lastName'] ?? '';
             _userRole = userData['role'] ?? 'Rol no disponible';
-            latitude = userData['latitude'] ?? 25.0;
-            longitude = userData['longitude'] ?? 50.0;
-            poligon_area = userData['poligon_area'] ?? 250.0;
           });
         }
       } else {
@@ -72,38 +68,35 @@ class _UserDashboardState extends State<UserDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        appBar: AppBar(
-          title: Row(
-            children: [
-              Icon(
-                Icons.location_on_rounded,
-                color: Theme.of(context).appBarTheme.iconTheme?.color ??
-                    Colors.white,
-              ),
-              const SizedBox(
-                width: 12,
-              ),
-              Text("Tu ubicación",
-                  style: Theme.of(context).appBarTheme.titleTextStyle),
-            ],
-          ),
-          backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Icon(
+              Icons.location_on_rounded,
+              color: Theme.of(context).appBarTheme.iconTheme?.color ?? Colors.white,
+            ),
+            const SizedBox(width: 12),
+            Text("Tu ubicación", style: Theme.of(context).appBarTheme.titleTextStyle),
+          ],
         ),
-        drawer: _onDrawer(context),
-        body: const MapView(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: (){
-            showModalBottomSheet(
-                context: context,
-                builder: (BuildContext context){
-                  return onModalSheet();
-              }
-            );
-          },
-          tooltip: "Información de ubicación",
-          child: const Icon(Icons.info_rounded),
-        ),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+      drawer: _onDrawer(context),
+      body: const MapView(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) {
+              final controller = Provider.of<MapController>(context, listen: true);
+              return onModalSheet(context, controller);
+            },
+          );
+        },
+        tooltip: "Información de ubicación",
+        child: const Icon(Icons.info_rounded),
+      ),
     );
   }
 
@@ -163,7 +156,9 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  Widget onModalSheet(){
+  Widget onModalSheet(BuildContext context, MapController controller) {
+    final MapController controller = Provider.of<MapController>(context, listen: false);
+
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -174,81 +169,76 @@ class _UserDashboardState extends State<UserDashboard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.share_location),
-                    const SizedBox(width: 10,),
-                    Text("Información sobre la Ubicación", style: Theme.of(context).textTheme.titleMedium),
-                  ],
-                )
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.share_location),
+                  const SizedBox(width: 10),
+                  Text("Información sobre la Ubicación", style: Theme.of(context).textTheme.titleMedium),
+                ],
+              ),
             ),
-            const SizedBox(height: 25,),
-            Expanded(child: longitudLabel()),
-            const SizedBox(height: 10,),
-            Expanded(child: latitudLabel()),
-            const SizedBox(height: 10,),
-            Expanded(child: areaLabel())
+            const SizedBox(height: 25),
+            _latitudLabel(controller.initialLatitude),
+            const SizedBox(height: 10),
+            _longitudLabel(controller.initialLongitude),
+            const SizedBox(height: 10),
+            _areaLabel(), // Mantén esto si tienes un área de polígono que quieras mostrar
           ],
         ),
       ),
     );
   }
 
-  Widget latitudLabel() {
+  Widget _latitudLabel(double? latitude) {
     return Row(
       children: [
         Text(
           "Latitud:",
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
           ),
         ),
         const SizedBox(width: 8),
         Text(
-          latitude.toString(),
+          latitude?.toString() ?? 'Desconocida',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
       ],
     );
   }
 
-  Widget longitudLabel() {
+  Widget _longitudLabel(double? longitude) {
     return Row(
       children: [
         Text(
           "Longitud:",
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
           ),
         ),
         const SizedBox(width: 8),
         Text(
-          longitude.toString(),
+          longitude?.toString() ?? 'Desconocida',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
       ],
     );
   }
 
-  Widget areaLabel() {
+  Widget _areaLabel() {
+    // Implementación para el área del polígono si es necesario
     return Row(
       children: [
         Text(
           "Área del polígono:",
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
           ),
         ),
         const SizedBox(width: 8),
         Text(
-          poligon_area.toString(),
+          "poligon_area.toString(),",
           style: Theme.of(context).textTheme.bodyLarge,
         ),
       ],
