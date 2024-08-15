@@ -73,14 +73,6 @@ class _AdminMainpageState extends State<AdminMainpage> {
     }
   }
 
-  // Función para mover la cámara a la posición actual
-  Future<void> _goToMyPosition() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(
-      mapController.initialCameraPosition
-    ));
-  }
-
   Future<void> _getUsersWithLocations() async {
     try {
       final usersSnapshot =
@@ -235,6 +227,13 @@ class _AdminMainpageState extends State<AdminMainpage> {
         var lastName = user['lastName'];
         var locations = user['locations'] as Map<String, dynamic>;
 
+        final initialCameraPosition = CameraPosition(
+            target: LatLng(
+                mapController.initialPosition!.longitude,
+                mapController.initialPosition!.latitude
+            ),
+            zoom: 15
+        );
 
         return Card(
           margin: const EdgeInsets.all(8.0),
@@ -252,7 +251,7 @@ class _AdminMainpageState extends State<AdminMainpage> {
                   height: 200,
                   width: double.infinity,
                   child: GoogleMap(
-                    initialCameraPosition: mapController.initialCameraPosition,
+                    initialCameraPosition: initialCameraPosition,
                     onMapCreated: (GoogleMapController controller) {
                       if (!_controller.isCompleted) {
                         _controller.complete(controller);

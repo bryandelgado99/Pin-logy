@@ -53,11 +53,18 @@ class MapView extends StatelessWidget {
                   });
                 }
 
-                final CameraPosition initialCameraPosition = controller.initialCameraPosition;
+                final initialCameraPosition = CameraPosition(
+                  target: LatLng(
+                    controller.initialPosition!.longitude,
+                    controller.initialPosition!.latitude
+                  ),
+                  zoom: 15
+                );
 
                 return GoogleMap(
                   initialCameraPosition: initialCameraPosition,
                   onMapCreated: controller.onMapCreated,
+                  polylines: controller.polylines,
                   zoomControlsEnabled: false,
                   compassEnabled: false,
                   rotateGesturesEnabled: false,
@@ -65,6 +72,7 @@ class MapView extends StatelessWidget {
                   onTap: controller.onTap,
                   myLocationButtonEnabled: true,
                   myLocationEnabled: true,
+                  polygons: controller.polygons,
                 );
               },
             );

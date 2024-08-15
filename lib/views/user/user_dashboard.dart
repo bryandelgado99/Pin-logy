@@ -10,7 +10,7 @@ import 'package:pin_logy/views/partials/maps/map_view.dart';
 import 'package:provider/provider.dart';
 
 class UserDashboard extends StatefulWidget {
-  final String userId; // Añadir el uid como parámetro
+  final String userId;
 
   const UserDashboard({super.key, required this.userId});
 
@@ -31,7 +31,6 @@ class _UserDashboardState extends State<UserDashboard> {
     _getUserData(widget.userId); // Usa el uid del widget
   }
 
-  // Función para obtener los datos del usuario desde Firestore
   Future<void> _getUserData(String uid) async {
     try {
       final userDoc = await FirebaseFirestore.instance
@@ -43,10 +42,9 @@ class _UserDashboardState extends State<UserDashboard> {
         final userData = userDoc.data();
         if (kDebugMode) {
           print("User Data: $userData");
-        }  // Para depuración
+        }
 
         if (userData != null) {
-          // Asigna los datos del usuario a las variables correspondientes
           setState(() {
             _userName = userData['name'] ?? 'Sin nombre';
             _userLastName = userData['lastName'] ?? '';
@@ -84,18 +82,34 @@ class _UserDashboardState extends State<UserDashboard> {
       ),
       drawer: _onDrawer(context),
       body: const MapView(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            builder: (BuildContext context) {
-              final controller = Provider.of<MapController>(context, listen: true);
-              return onModalSheet(context, controller);
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton.small(
+            tooltip: "Borrar polígono",
+            heroTag: "Polygon",
+            onPressed: () {
+              final controller = context.read<MapController>();
+              controller.removePolygon();
             },
-          );
-        },
-        tooltip: "Información de ubicación",
-        child: const Icon(Icons.info_rounded),
+            child: const Icon(Icons.delete_outline_outlined),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  final controller = Provider.of<MapController>(context, listen: true);
+                  return onModalSheet(context, controller);
+                },
+              );
+            },
+            tooltip: "Información de ubicación",
+            child: const Icon(Icons.info_rounded),
+          ),
+        ],
       ),
     );
   }
@@ -117,6 +131,14 @@ class _UserDashboardState extends State<UserDashboard> {
               color: Theme.of(context).primaryColor,
             ),
           ),
+          ListTile(
+            leading: const Icon(Icons.school_rounded),
+            title: const Text('Escuela Politécnica Nacional'),
+            onTap: () {
+              context.read<MapController>().moveCameraToPosition(-0.2124413, -78.4931591);
+              Navigator.pop(context);
+            },
+          ),
           const Spacer(),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -133,7 +155,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => RequestPage(userId: widget.userId)),
-                          (Route<dynamic> route) => false, // Esto asegura que todas las rutas anteriores se eliminen
+                          (Route<dynamic> route) => false,
                     );
                   },
                   child: Row(
@@ -157,8 +179,6 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Widget onModalSheet(BuildContext context, MapController controller) {
-    final MapController controller = Provider.of<MapController>(context, listen: false);
-
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -183,7 +203,7 @@ class _UserDashboardState extends State<UserDashboard> {
             const SizedBox(height: 10),
             _longitudLabel(controller.initialLongitude),
             const SizedBox(height: 10),
-            _areaLabel(), // Mantén esto si tienes un área de polígono que quieras mostrar
+            _areaLabel(controller.calculatePolygonArea()), // Mostrar el área calculada
           ],
         ),
       ),
@@ -226,8 +246,7 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  Widget _areaLabel() {
-    // Implementación para el área del polígono si es necesario
+  Widget _areaLabel(double area) {
     return Row(
       children: [
         Text(
@@ -238,7 +257,7 @@ class _UserDashboardState extends State<UserDashboard> {
         ),
         const SizedBox(width: 8),
         Text(
-          "poligon_area.toString(),",
+          area.toStringAsFixed(2), // Muestra el área con dos decimales
           style: Theme.of(context).textTheme.bodyLarge,
         ),
       ],

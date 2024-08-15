@@ -158,6 +158,14 @@ class UserLocationMap extends StatelessWidget {
           ),
         };
 
+        final initialCameraPosition = CameraPosition(
+            target: LatLng(
+                mapController.initialPosition!.longitude,
+                mapController.initialPosition!.latitude
+            ),
+            zoom: 15
+        );
+
         return Card(
           margin: const EdgeInsets.all(8.0),
           child: Padding(
@@ -174,7 +182,7 @@ class UserLocationMap extends StatelessWidget {
                   height: 200,
                   width: double.infinity,
                   child: GoogleMap(
-                    initialCameraPosition: mapController.initialCameraPosition,
+                    initialCameraPosition: initialCameraPosition,
                     myLocationEnabled: locationPermissionGranted,
                     zoomControlsEnabled: false,
                     polygons: polygons,
