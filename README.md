@@ -19,8 +19,7 @@ El presente proyecto se a desarrollado utilizando FLUTTER y se ha usado una base
 - Mateo Miño
 
 ## Despliegues
-Para acceder a la versión PWA de nuestra aplicación puedes hacerlo a través del siguiente enlace: (Pin-logy | Web Version)
-[https://pin-logy-8f8ac.web.app/].
+Para acceder a la versión PWA de nuestra aplicación puedes hacerlo a través del siguiente enlace: [Pin-logy | Web Version](https://pin-logy-8f8ac.web.app/).
 
 ## Instalación
 >[!IMPORTANT]
