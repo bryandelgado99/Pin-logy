@@ -45,16 +45,34 @@ Realiza el build de tu aplicación web para generar los archivos necesarios. Lue
 
 Modifica el archivo firebase.json en tu proyecto para incluir el nombre personalizado de tu aplicación en la configuración de hosting.
 
-flutter deploy web
+- flutter deploy web
 
 Finalmente luego de copiar el contenido de build/web a public ejecutamos el siguiente comando
 
-npx firebase deploy --only hosting:nombredesuproyecto
+- npx firebase deploy --only hosting:nombredesuproyecto
 
 
 
 ## Capturas de la Aplicación
 Login
+
+![WhatsApp Image 2024-08-15 at 23 12 02 (4)](https://github.com/user-attachments/assets/7f525f84-ee38-45f6-a84d-d002197117a6)
+
+Inicio de Sesion de Usuario
+
+![WhatsApp Image 2024-08-15 at 23 12 02 (3)](https://github.com/user-attachments/assets/aed033f1-34d1-4dc6-8345-8b62a0a6c040)
+
+Inicio de Sesion de Administrador
+
+![WhatsApp Image 2024-08-15 at 23 12 02 (2)](https://github.com/user-attachments/assets/a97b4693-c87d-48e5-bcce-bfcf67d80df2)
+
+Opciones de Administrador
+
+![WhatsApp Image 2024-08-15 at 23 12 02 (1)](https://github.com/user-attachments/assets/dc62ba07-a9b4-4f6c-a182-01ac998476f3)
+
+Formulario de Agregar Usuario
+
+![WhatsApp Image 2024-08-15 at 23 12 02](https://github.com/user-attachments/assets/035b0b90-23e6-42ff-8646-4ad43006744a)
 
 Historial de Ubicaciones
 
