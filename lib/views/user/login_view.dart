@@ -203,11 +203,9 @@ class _LoginUserViewState extends State<LoginUserView> {
                   );
 
                   if (uid != null) {
-                    // Verificar el estado del permiso
                     final permissionStatus = await Permission.locationWhenInUse.status;
 
-                    if (permissionStatus == PermissionStatus.granted) {
-                      // Si el permiso está concedido, navegar directamente al UserDashboard
+                    if (permissionStatus.isGranted) {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -215,7 +213,6 @@ class _LoginUserViewState extends State<LoginUserView> {
                         ),
                       );
                     } else {
-                      // Si el permiso no está concedido, navegar a RequestPage
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -224,22 +221,18 @@ class _LoginUserViewState extends State<LoginUserView> {
                       );
                     }
                   } else {
-                    // Mostrar mensaje de error y regresar a la pantalla de inicio de sesión
-                    Navigator.of(context)
-                        .pop(); // Regresar de la pantalla de carga
+                    Navigator.of(context).pop(); // Regresar de la pantalla de carga
                     toastification.show(
                       context: context,
                       type: ToastificationType.error,
                       style: ToastificationStyle.flat,
                       title: const Text("Error al iniciar sesión"),
-                      description:
-                      const Text("Correo y/o contraseña incorrectos"),
+                      description: const Text("Correo y/o contraseña incorrectos"),
                       alignment: Alignment.topCenter,
                       autoCloseDuration: const Duration(seconds: 8),
                     );
                   }
                 } catch (e) {
-                  // Manejar excepciones y mostrar mensaje de error
                   Navigator.of(context)
                       .pop(); // Regresar de la pantalla de carga
                   toastification.show(
@@ -247,8 +240,8 @@ class _LoginUserViewState extends State<LoginUserView> {
                     type: ToastificationType.error,
                     style: ToastificationStyle.flat,
                     title: const Text("Error al iniciar sesión"),
-                    description:
-                    const Text("Correo y/o contraseña incorrectos"),
+                    description: const Text(
+                        "Correo y/o contraseña incorrectos"),
                     alignment: Alignment.topCenter,
                     autoCloseDuration: const Duration(seconds: 8),
                   );
