@@ -63,7 +63,9 @@ class MapView extends StatelessWidget {
 
                 return GoogleMap(
                   initialCameraPosition: initialCameraPosition,
-                  onMapCreated: controller.onMapCreated,
+                  onMapCreated: (controller) {
+                    context.read<MapController>().onMapCreated(controller, context);
+                  },
                   polylines: controller.polylines,
                   zoomControlsEnabled: false,
                   compassEnabled: false,
@@ -73,6 +75,9 @@ class MapView extends StatelessWidget {
                   myLocationButtonEnabled: true,
                   myLocationEnabled: true,
                   polygons: controller.polygons,
+                  onLongPress: (position){
+                    controller.onLongPressTap();
+                  },
                 );
               },
             );

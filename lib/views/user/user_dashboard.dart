@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pin_logy/components/info_dialog.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
 import 'package:pin_logy/services/auth/user/user_auth_provider.dart';
 import 'package:pin_logy/services/requests/request_page.dart';
@@ -65,51 +66,51 @@ class _UserDashboardState extends State<UserDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Icon(
-              Icons.location_on_rounded,
-              color: Theme.of(context).appBarTheme.iconTheme?.color ?? Colors.white,
+    return ChangeNotifierProvider(
+      create: (_) => MapController(),
+      child: Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: AppBar(
+            title: Row(
+              children: [
+                Icon(
+                  Icons.location_on_rounded,
+                  color: Theme.of(context).appBarTheme.iconTheme?.color ?? Colors.white,
+                ),
+                const SizedBox(width: 12),
+                Text("Tu ubicación", style: Theme.of(context).appBarTheme.titleTextStyle),
+              ],
             ),
-            const SizedBox(width: 12),
-            Text("Tu ubicación", style: Theme.of(context).appBarTheme.titleTextStyle),
-          ],
-        ),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      drawer: _onDrawer(context),
-      body: const MapView(),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          FloatingActionButton.small(
-            tooltip: "Borrar polígono",
-            heroTag: "Polygon",
-            onPressed: () {
-              final controller = context.read<MapController>();
-              controller.removePolygon();
-            },
-            child: const Icon(Icons.delete_outline_outlined),
+            actions: [
+              IconButton(
+                  onPressed: (){
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context){
+                          return const InfoDialog();
+                        }
+                    );
+                  },
+                  icon: const Icon(Icons.info_rounded)
+              )
+            ],
+            backgroundColor: Theme.of(context).primaryColor,
           ),
-          const SizedBox(height: 12),
-          FloatingActionButton(
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (BuildContext context) {
-                  final controller = Provider.of<MapController>(context, listen: true);
-                  return onModalSheet(context, controller);
-                },
-              );
-            },
-            tooltip: "Información de ubicación",
-            child: const Icon(Icons.info_rounded),
-          ),
-        ],
+          drawer: _onDrawer(context),
+          body: Stack(
+            children: [
+              const MapView(),
+              Positioned(
+                right: 16,  // Mueve el card hacia la derecha
+                bottom: 16, // Mueve el card hacia abajo
+                child: Consumer<MapController>(
+                  builder: (context, controller, child) {
+                    return onCardAdvice(context, controller);
+                  },
+                ),
+              ),
+            ],
+          )
       ),
     );
   }
@@ -178,31 +179,27 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  Widget onModalSheet(BuildContext context, MapController controller) {
-    return SizedBox(
-      height: 200,
-      width: double.infinity,
+  Widget onCardAdvice(BuildContext context, MapController controller){
+    return Card(
+      elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.share_location),
-                  const SizedBox(width: 10),
-                  Text("Información sobre la Ubicación", style: Theme.of(context).textTheme.titleMedium),
-                ],
-              ),
+            Row(
+              children: [
+                const Icon(Icons.share_location),
+                const SizedBox(width: 10),
+                Text("Detalles de Ubicación", style: Theme.of(context).textTheme.titleMedium),
+              ],
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 16),
             _latitudLabel(controller.initialLatitude),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             _longitudLabel(controller.initialLongitude),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             _areaLabel(controller.calculatePolygonArea()), // Mostrar el área calculada
           ],
         ),
@@ -246,7 +243,7 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  Widget _areaLabel(double area) {
+  Widget _areaLabel(double? area) {
     return Row(
       children: [
         Text(
@@ -257,7 +254,7 @@ class _UserDashboardState extends State<UserDashboard> {
         ),
         const SizedBox(width: 8),
         Text(
-          area.toStringAsFixed(2), // Muestra el área con dos decimales
+          area?.toStringAsFixed(2) ?? "Sin medida", // Muestra el área con dos decimales
           style: Theme.of(context).textTheme.bodyLarge,
         ),
       ],

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:pin_logy/components/info_dialog.dart';
 import 'map_style.dart';
 
 class MapController extends ChangeNotifier {
@@ -54,13 +55,23 @@ class MapController extends ChangeNotifier {
   }
 
   // Función para cambiar el estilo del mapa
-  void onMapCreated(GoogleMapController controller) {
+  void onMapCreated(GoogleMapController controller,  BuildContext context) {
     if (!_mapController.isCompleted) {
       _mapController.complete(controller);
     }
     _googleMapController = controller;
     controller.setMapStyle(mapData);
     notifyListeners();
+
+    // Mostrar el diálogo una vez que el mapa se haya cargado
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const InfoDialog();
+        },
+      );
+    });
   }
 
   Future<void> _init() async {
@@ -167,14 +178,16 @@ class MapController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Método para borrar el polígono actual
-  void removePolygon() {
+  // Método para borrar el polígono al hacer long press
+  void onLongPressTap() {
     final polygonID = PolygonId(_polygonId);
+
     if (_polygons.containsKey(polygonID)) {
-      _polygons.remove(polygonID);
-      notifyListeners();
+      _polygons.remove(polygonID); // Eliminar el polígono del mapa
+      notifyListeners(); // Notificar a los listeners para que se actualice la UI
     }
   }
+
 
   // Método para calcular el área del polígono en metros cuadrados
   double calculatePolygonArea() {

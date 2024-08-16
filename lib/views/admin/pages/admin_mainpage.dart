@@ -105,7 +105,9 @@ class _AdminMainpageState extends State<AdminMainpage> {
           _isLoading = false;
         });
       } else {
-        print('No se encontraron usuarios en la colección Users.');
+        if (kDebugMode) {
+          print('No se encontraron usuarios en la colección Users.');
+        }
         setState(() {
           _isLoading = false;
         });
