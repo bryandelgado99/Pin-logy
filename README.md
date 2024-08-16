@@ -38,9 +38,9 @@ Primero ejecutar los siguientes comandos para poder tener las herramientas neces
 
 ```npm install -g firebase-tools```
  
-- npx firebase login
+``` npx firebase login ```
 
-- npx firebase hosting init
+``` npx firebase hosting init ```
 
 Configura tu página web en Firebase para permitir el uso de un dominio personalizado.
 
