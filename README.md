@@ -26,7 +26,7 @@ El presente proyecto se a desarrollado utilizando FLUTTER y se ha usado una base
 ## Instalación
 - Al clonar el presente proyecto podemos instalar todas las dependencias del proyecto con el comando flutter pub get
 
-# Generar APK
+### Generar APK
 - Para generar un apk usaremos el comando flutter (build apk --release) y buscar la APK generada en build/app/flutter-apk/
 
 # Deploy Web
