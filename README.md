@@ -1,7 +1,6 @@
 <p align="center">
-  <img src=""/>
-  <h1>Pin-Logy - Tu geolocalización en Flutter favorita
-</h1>
+  <img src="https://github.com/bryandelgado99/Pin-logy/blob/17bc5c21b949f4d0779d35dc47fc3b8e12de9824/assets/icon.png" width="175" align="center"/>
+  <h1 align="center"> Pin-Logy - Tu geolocalización en Flutter favorita </h1>
 </p>
 
 ## Introducción
@@ -21,7 +20,7 @@ El presente proyecto se a desarrollado utilizando FLUTTER y se ha usado una base
 
 ## Despliegues
 Para acceder a la versión PWA de nuestra aplicación puedes hacerlo a través del siguiente enlace: (Pin-logy | Web Version)
-[].
+[https://pin-logy-8f8ac.web.app/].
 
 ## Instalación
 >[!IMPORTANT]
