@@ -34,7 +34,9 @@ El presente proyecto se a desarrollado utilizando FLUTTER y se ha usado una base
 
 ### Deploy Web
 Primero ejecutar los siguientes comandos para poder tener las herramientas necesarias
-- npm install -g firebase-tools
+
+
+```npm install -g firebase-tools```
  
 - npx firebase login
 
