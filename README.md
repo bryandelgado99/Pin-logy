@@ -1,40 +1,41 @@
 # Proyecto final Aplicaciones Móviles 
 El presente proyecto se a desarrollado utilizando FLUTTER y se ha usado una base de datos en FIREBASE. Las funcionalidades implementadas en el proyecto son:
 
--Login con Firebase y con Gmail
+- Login con Firebase y con Gmail
 
--Registro con Firebase
+- Registro con Firebase
 
--Barra de navegación
+- Barra de navegación
 
-Administración de usuarios (admin y user)
+- Administración de usuarios (admin y user)
 
-Ubicación en tiempo real
+- Ubicación en tiempo real
 
-Ubicación en segundo plano
+- Ubicación en segundo plano
 
-Cálculo de área del polígono
+- Cálculo de área del polígono
 
 ## Integrantes
 
--Erika Alvarado
+- Erika Alvarado
 
--Bryan Delgado
+- Bryan Delgado
 
--Mateo Miño
+- Mateo Miño
 
 ## Instalación
--Al clonar el presente proyecto podemos instalar todas las dependencias del proyecto con el comando flutter pub get
-Generar APK
--Para generar un apk usaremos el comando flutter (build apk --release) y buscar la APK generada en build/app/flutter-apk/
+- Al clonar el presente proyecto podemos instalar todas las dependencias del proyecto con el comando flutter pub get
 
-Deploy Web
+# Generar APK
+- Para generar un apk usaremos el comando flutter (build apk --release) y buscar la APK generada en build/app/flutter-apk/
+
+# Deploy Web
 Primero ejecutar los siguientes comandos para poder tener las herramientas necesarias
--npm install -g firebase-tools
+- npm install -g firebase-tools
+ 
+- npx firebase login
 
--npx firebase login
-
--npx firebase hosting init
+- npx firebase hosting init
 
 Configura tu página web en Firebase para permitir el uso de un dominio personalizado.
 
