@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:pin_logy/components/info_dialog.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
 import 'package:pin_logy/services/auth/user/user_auth_provider.dart';
-import 'package:pin_logy/services/requests/request_page.dart';
 import 'package:pin_logy/views/partials/compose_view.dart';
 import 'package:pin_logy/views/partials/maps/map_controller.dart';
 import 'package:pin_logy/views/partials/maps/map_view.dart';
