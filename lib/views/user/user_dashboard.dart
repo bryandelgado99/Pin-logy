@@ -6,6 +6,7 @@ import 'package:pin_logy/components/info_dialog.dart';
 import 'package:pin_logy/components/theme_switcher.dart';
 import 'package:pin_logy/services/auth/user/user_auth_provider.dart';
 import 'package:pin_logy/services/requests/request_page.dart';
+import 'package:pin_logy/views/partials/compose_view.dart';
 import 'package:pin_logy/views/partials/maps/map_controller.dart';
 import 'package:pin_logy/views/partials/maps/map_view.dart';
 import 'package:provider/provider.dart';
@@ -166,7 +167,9 @@ class _UserDashboardState extends State<UserDashboard> {
                     _authProvider.signOut();
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => RequestPage(userId: widget.userId)),
+                      MaterialPageRoute(
+                        builder: (context) => const ComposeView(),
+                      ),
                           (Route<dynamic> route) => false,
                     );
                   },
