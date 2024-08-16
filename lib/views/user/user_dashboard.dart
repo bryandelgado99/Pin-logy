@@ -265,7 +265,7 @@ class _UserDashboardState extends State<UserDashboard> {
         ),
         const SizedBox(width: 8),
         Text(
-          "${area?.toStringAsFixed(2)} Km²" ?? "Sin medida", // Muestra el área con dos decimales
+          "${area?.toStringAsFixed(2)} Km²", // Muestra el área con dos decimales
           style: Theme.of(context).textTheme.bodyLarge,
         ),
       ],
