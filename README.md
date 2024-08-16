@@ -27,10 +27,10 @@ El presente proyecto se a desarrollado utilizando FLUTTER y se ha usado una base
 
 
 ## Instalación
-- Al clonar el presente proyecto podemos instalar todas las dependencias del proyecto con el comando flutter pub get
+- Al clonar el presente proyecto podemos instalar todas las dependencias del proyecto con el comando ``` flutter pub get ```
 
 ### Generar APK
-- Para generar un apk usaremos el comando flutter [build apk --release] y buscar la APK generada en build/app/flutter-apk/
+- Para generar un apk usaremos el comando flutter ``` build apk --release ``` y buscar la APK generada en build/app/flutter-apk/
 
 ### Deploy Web
 Primero ejecutar los siguientes comandos para poder tener las herramientas necesarias
@@ -50,11 +50,11 @@ Realiza el build de tu aplicación web para generar los archivos necesarios. Lue
 
 Modifica el archivo firebase.json en tu proyecto para incluir el nombre personalizado de tu aplicación en la configuración de hosting.
 
-- flutter deploy web
+``` flutter deploy web ```
 
 Finalmente luego de copiar el contenido de build/web a public ejecutamos el siguiente comando
 
-- npx firebase deploy --only hosting:nombredesuproyecto
+``` npx firebase deploy --only hosting:nombredesuproyecto ```
 
 
 
