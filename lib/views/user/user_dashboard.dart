@@ -132,13 +132,24 @@ class _UserDashboardState extends State<UserDashboard> {
               color: Theme.of(context).primaryColor,
             ),
           ),
-          ListTile(
-            leading: const Icon(Icons.school_rounded),
-            title: const Text('Escuela Politécnica Nacional'),
-            onTap: () {
-              context.read<MapController>().moveCameraToPosition(-0.2124413, -78.4931591);
-              Navigator.pop(context);
-            },
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Mis ubicaciones", style: Theme.of(context).textTheme.bodySmall,),
+                const SizedBox(height: 15,),
+                ListTile(
+                  leading: const Icon(Icons.school_rounded),
+                  title: const Text('Escuela Politécnica Nacional'),
+                  onTap: () {
+                    context.read<MapController>().moveCameraToPosition(-0.2124413, -78.4931591);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
           ),
           const Spacer(),
           Padding(
@@ -254,7 +265,7 @@ class _UserDashboardState extends State<UserDashboard> {
         ),
         const SizedBox(width: 8),
         Text(
-          area?.toStringAsFixed(2) ?? "Sin medida", // Muestra el área con dos decimales
+          "${area?.toStringAsFixed(2)} Km²" ?? "Sin medida", // Muestra el área con dos decimales
           style: Theme.of(context).textTheme.bodyLarge,
         ),
       ],
